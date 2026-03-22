@@ -253,7 +253,7 @@ ACharacter* UNCRealityCameraComponent::GetOwningCharacter() const
 	return Cast<ACharacter>(GetOwner());
 }
 
-float UNCRealityCameraComponent::GetEffectiveIntensity(const float DeltaTime) const
+float UNCRealityCameraComponent::GetEffectiveIntensity(const float DeltaTime)
 {
 	const float PrecisionTarget = bPrecisionInteractionEnabled ? 1.0f : 0.0f;
 	PrecisionModeBlend = FMath::FInterpTo(
@@ -265,3 +265,4 @@ float UNCRealityCameraComponent::GetEffectiveIntensity(const float DeltaTime) co
 	const float InteractionScale = FMath::Lerp(1.0f, RealityCameraTuning.InteractionDampingFactor, PrecisionModeBlend);
 	return FMath::Clamp(RealityCameraTuning.RealityCamIntensity, 0.0f, 1.0f) * InteractionScale;
 }
+

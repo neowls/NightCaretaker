@@ -1,212 +1,341 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "NCPlayerCharacter.h"
 
 #include "../Camera/NCRealityCameraComponent.h"
+#include "../Interaction/NCDoorActor.h"
+#include "../Interaction/NCPropInteractorComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Engine/EngineTypes.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "InputAction.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 ANCPlayerCharacter::ANCPlayerCharacter()
 {
-	// Use the standard mannequin capsule so collision and interaction distances stay predictable.
-	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
+    // Use the standard mannequin capsule so collision and interaction distances stay predictable.
+    GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
 
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = true;
-	bUseControllerRotationRoll = false;
+    PrimaryActorTick.bCanEverTick = true;
 
-	RunSpeed = 450.0f;
+    bUseControllerRotationPitch = false;
+    bUseControllerRotationYaw = true;
+    bUseControllerRotationRoll = false;
 
-	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
-	check(CharacterMovementComponent != nullptr);
+    RunSpeed = 450.0f;
+    ActiveGrabbedDoor = nullptr;
 
-	CharacterMovementComponent->bOrientRotationToMovement = false;
-	CharacterMovementComponent->JumpZVelocity = 0.0f;
-	CharacterMovementComponent->AirControl = 0.0f;
-	CharacterMovementComponent->MaxWalkSpeed = RunSpeed;
-	CharacterMovementComponent->BrakingDecelerationWalking = 2000.0f;
-	CharacterMovementComponent->NavAgentProps.bCanJump = false;
+    UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+    check(CharacterMovementComponent != nullptr);
 
-	JumpMaxCount = 0;
-	JumpMaxHoldTime = 0.0f;
+    CharacterMovementComponent->bOrientRotationToMovement = false;
+    CharacterMovementComponent->JumpZVelocity = 0.0f;
+    CharacterMovementComponent->AirControl = 0.0f;
+    CharacterMovementComponent->MaxWalkSpeed = RunSpeed;
+    CharacterMovementComponent->BrakingDecelerationWalking = 2000.0f;
+    CharacterMovementComponent->NavAgentProps.bCanJump = false;
 
-	RealityCameraComponent = CreateDefaultSubobject<UNCRealityCameraComponent>(TEXT("RealityCamera"));
-	RealityCameraComponent->SetupAttachment(GetCapsuleComponent());
-	RealityCameraComponent->ApplyRuntimeTuning();
-	BaseEyeHeight = RealityCameraComponent->RealityCameraTuning.BaseOffset.Z;
+    JumpMaxCount = 0;
+    JumpMaxHoldTime = 0.0f;
 
-	USkeletalMeshComponent* CharacterMesh = GetMesh();
-	check(CharacterMesh != nullptr);
+    RealityCameraComponent = CreateDefaultSubobject<UNCRealityCameraComponent>(TEXT("RealityCamera"));
+    RealityCameraComponent->SetupAttachment(GetCapsuleComponent());
+    RealityCameraComponent->ApplyRuntimeTuning();
+    BaseEyeHeight = RealityCameraComponent->RealityCameraTuning.BaseOffset.Z;
 
-	CharacterMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
-	CharacterMesh->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
-	CharacterMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CharacterMesh->SetHiddenInGame(true, true);
-	CharacterMesh->SetVisibility(false, true);
-	CharacterMesh->SetCastShadow(false);
-	CharacterMesh->bOwnerNoSee = true;
-	CharacterMesh->bCastHiddenShadow = false;
-	CharacterMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+    PropInteractorComponent = CreateDefaultSubobject<UNCPropInteractorComponent>(TEXT("PropInteractor"));
 
-	static ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextFinder(
-		TEXT("/Game/NightCaretaker/Input/IMC_Default.IMC_Default"));
-	if (DefaultMappingContextFinder.Succeeded())
-	{
-		DefaultInputMappingContext = DefaultMappingContextFinder.Object;
-	}
+    PhysicsHandleComponent = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
+    PhysicsHandleComponent->bSoftLinearConstraint = true;
+    PhysicsHandleComponent->bSoftAngularConstraint = true;
+    PhysicsHandleComponent->bInterpolateTarget = true;
+    PhysicsHandleComponent->InterpolationSpeed = 12.0f;
 
-	static ConstructorHelpers::FObjectFinder<UInputMappingContext> MouseLookMappingContextFinder(
-		TEXT("/Game/NightCaretaker/Input/IMC_MouseLook.IMC_MouseLook"));
-	if (MouseLookMappingContextFinder.Succeeded())
-	{
-		MouseLookInputMappingContext = MouseLookMappingContextFinder.Object;
-	}
+    USkeletalMeshComponent* CharacterMesh = GetMesh();
+    check(CharacterMesh != nullptr);
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> MoveInputActionFinder(
-		TEXT("/Game/NightCaretaker/Input/Actions/IA_Move.IA_Move"));
-	if (MoveInputActionFinder.Succeeded())
-	{
-		MoveInputAction = MoveInputActionFinder.Object;
-	}
+    CharacterMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
+    CharacterMesh->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
+    CharacterMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    CharacterMesh->SetHiddenInGame(true, true);
+    CharacterMesh->SetVisibility(false, true);
+    CharacterMesh->SetCastShadow(false);
+    CharacterMesh->bOwnerNoSee = true;
+    CharacterMesh->bCastHiddenShadow = false;
+    CharacterMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> LookInputActionFinder(
-		TEXT("/Game/NightCaretaker/Input/Actions/IA_Look.IA_Look"));
-	if (LookInputActionFinder.Succeeded())
-	{
-		LookInputAction = LookInputActionFinder.Object;
-	}
+    ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextFinder(
+        TEXT("/Game/NightCaretaker/Input/IMC_Default.IMC_Default"));
+    if (DefaultMappingContextFinder.Succeeded())
+    {
+        DefaultInputMappingContext = DefaultMappingContextFinder.Object;
+    }
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> MouseLookInputActionFinder(
-		TEXT("/Game/NightCaretaker/Input/Actions/IA_MouseLook.IA_MouseLook"));
-	if (MouseLookInputActionFinder.Succeeded())
-	{
-		MouseLookInputAction = MouseLookInputActionFinder.Object;
-	}
+    ConstructorHelpers::FObjectFinder<UInputMappingContext> MouseLookMappingContextFinder(
+        TEXT("/Game/NightCaretaker/Input/IMC_MouseLook.IMC_MouseLook"));
+    if (MouseLookMappingContextFinder.Succeeded())
+    {
+        MouseLookInputMappingContext = MouseLookMappingContextFinder.Object;
+    }
+
+    ConstructorHelpers::FObjectFinder<UInputAction> MoveInputActionFinder(
+        TEXT("/Game/NightCaretaker/Input/Actions/IA_Move.IA_Move"));
+    if (MoveInputActionFinder.Succeeded())
+    {
+        MoveInputAction = MoveInputActionFinder.Object;
+    }
+
+    ConstructorHelpers::FObjectFinder<UInputAction> LookInputActionFinder(
+        TEXT("/Game/NightCaretaker/Input/Actions/IA_Look.IA_Look"));
+    if (LookInputActionFinder.Succeeded())
+    {
+        LookInputAction = LookInputActionFinder.Object;
+    }
+
+    ConstructorHelpers::FObjectFinder<UInputAction> MouseLookInputActionFinder(
+        TEXT("/Game/NightCaretaker/Input/Actions/IA_MouseLook.IA_MouseLook"));
+    if (MouseLookInputActionFinder.Succeeded())
+    {
+        MouseLookInputAction = MouseLookInputActionFinder.Object;
+    }
+
+    ConstructorHelpers::FObjectFinder<UInputAction> GrabHoldInputActionFinder(
+        TEXT("/Game/NightCaretaker/Input/Actions/IA_Grab.IA_Grab"));
+    if (GrabHoldInputActionFinder.Succeeded())
+    {
+        GrabHoldInputAction = GrabHoldInputActionFinder.Object;
+    }
+}
+
+void ANCPlayerCharacter::Tick(const float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+
+    if (ActiveGrabbedDoor != nullptr && ActiveGrabbedDoor->IsDoorGrabActive() == false)
+    {
+        ActiveGrabbedDoor = nullptr;
+        RefreshPrecisionInteractionState();
+    }
 }
 
 void ANCPlayerCharacter::PostInitializeComponents()
 {
-	Super::PostInitializeComponents();
+    Super::PostInitializeComponents();
 
-	RefreshRealityCameraSettings();
+    RefreshRealityCameraSettings();
 }
 
 void ANCPlayerCharacter::PawnClientRestart()
 {
-	Super::PawnClientRestart();
+    Super::PawnClientRestart();
 
-	ApplyInputMappingContexts();
+    ApplyInputMappingContexts();
 }
 
 void ANCPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+    Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
-	checkf(EnhancedInputComponent != nullptr, TEXT("NCPlayerCharacter requires an EnhancedInputComponent."));
+    UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+    checkf(EnhancedInputComponent != nullptr, TEXT("NCPlayerCharacter requires an EnhancedInputComponent."));
 
-	if (MoveInputAction != nullptr)
-	{
-		EnhancedInputComponent->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &ANCPlayerCharacter::Move);
-	}
+    if (MoveInputAction != nullptr)
+    {
+        EnhancedInputComponent->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &ANCPlayerCharacter::Move);
+    }
 
-	if (LookInputAction != nullptr)
-	{
-		EnhancedInputComponent->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &ANCPlayerCharacter::Look);
-	}
+    if (LookInputAction != nullptr)
+    {
+        EnhancedInputComponent->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &ANCPlayerCharacter::Look);
+    }
 
-	if (MouseLookInputAction != nullptr)
-	{
-		EnhancedInputComponent->BindAction(MouseLookInputAction, ETriggerEvent::Triggered, this, &ANCPlayerCharacter::Look);
-	}
+    if (MouseLookInputAction != nullptr)
+    {
+        EnhancedInputComponent->BindAction(MouseLookInputAction, ETriggerEvent::Triggered, this, &ANCPlayerCharacter::Look);
+    }
+
+    if (GrabHoldInputAction != nullptr)
+    {
+        EnhancedInputComponent->BindAction(GrabHoldInputAction, ETriggerEvent::Started, this, &ANCPlayerCharacter::BeginGrabHold);
+        EnhancedInputComponent->BindAction(GrabHoldInputAction, ETriggerEvent::Completed, this, &ANCPlayerCharacter::EndGrabHold);
+        EnhancedInputComponent->BindAction(GrabHoldInputAction, ETriggerEvent::Canceled, this, &ANCPlayerCharacter::EndGrabHold);
+    }
 }
 
 void ANCPlayerCharacter::Move(const FInputActionValue& Value)
 {
-	const FVector2D MoveAxis = Value.Get<FVector2D>();
-	if (MoveAxis.IsNearlyZero())
-	{
-		return;
-	}
+    const FVector2D MoveAxis = Value.Get<FVector2D>();
+    if (MoveAxis.IsNearlyZero())
+    {
+        return;
+    }
 
-	check(Controller != nullptr);
+    check(Controller != nullptr);
 
-	// RealityCam movement still follows controller yaw so navigation remains direct and readable.
-	const FRotator ControlRotation = Controller->GetControlRotation();
-	const FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
+    // RealityCam movement still follows controller yaw so navigation remains direct and readable.
+    const FRotator ControlRotation = Controller->GetControlRotation();
+    const FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
 
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+    const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+    const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-	AddMovementInput(ForwardDirection, MoveAxis.Y);
-	AddMovementInput(RightDirection, MoveAxis.X);
+    AddMovementInput(ForwardDirection, MoveAxis.Y);
+    AddMovementInput(RightDirection, MoveAxis.X);
 }
 
 void ANCPlayerCharacter::Look(const FInputActionValue& Value)
 {
-	const FVector2D LookAxis = Value.Get<FVector2D>();
-	if (LookAxis.IsNearlyZero())
-	{
-		return;
-	}
+    const FVector2D LookAxis = Value.Get<FVector2D>();
+    if (LookAxis.IsNearlyZero())
+    {
+        return;
+    }
 
-	AddControllerYawInput(LookAxis.X);
-	AddControllerPitchInput(LookAxis.Y);
+    AddControllerYawInput(LookAxis.X);
+    AddControllerPitchInput(LookAxis.Y);
+}
+
+void ANCPlayerCharacter::BeginGrabHold()
+{
+    if (ActiveGrabbedDoor != nullptr && ActiveGrabbedDoor->IsDoorGrabActive())
+    {
+        return;
+    }
+
+    FHitResult DoorHit;
+    if (ANCDoorActor* TargetDoor = TraceDoorTarget(DoorHit))
+    {
+        if (PhysicsHandleComponent != nullptr && TargetDoor->BeginDoorGrab(DoorHit, *PhysicsHandleComponent))
+        {
+            ActiveGrabbedDoor = TargetDoor;
+
+            if (RealityCameraComponent != nullptr)
+            {
+                RealityCameraComponent->SetPrecisionInteractionEnabled(true);
+            }
+        }
+
+        return;
+    }
+
+    if (PropInteractorComponent != nullptr)
+    {
+        PropInteractorComponent->TryBeginGrab();
+    }
+}
+
+void ANCPlayerCharacter::EndGrabHold()
+{
+    if (ActiveGrabbedDoor != nullptr)
+    {
+        if (PhysicsHandleComponent != nullptr)
+        {
+            ActiveGrabbedDoor->EndDoorGrab(*PhysicsHandleComponent);
+        }
+
+        ActiveGrabbedDoor = nullptr;
+        RefreshPrecisionInteractionState();
+        return;
+    }
+
+    if (PropInteractorComponent != nullptr)
+    {
+        PropInteractorComponent->EndGrab();
+    }
+
+    RefreshPrecisionInteractionState();
 }
 
 void ANCPlayerCharacter::RefreshRealityCameraSettings()
 {
-	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
-	check(CharacterMovementComponent != nullptr);
-	check(RealityCameraComponent != nullptr);
+    UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+    check(CharacterMovementComponent != nullptr);
+    check(RealityCameraComponent != nullptr);
 
-	CharacterMovementComponent->MaxWalkSpeed = RunSpeed;
-	RealityCameraComponent->ApplyRuntimeTuning();
-	BaseEyeHeight = RealityCameraComponent->RealityCameraTuning.BaseOffset.Z;
+    CharacterMovementComponent->MaxWalkSpeed = RunSpeed;
+    RealityCameraComponent->ApplyRuntimeTuning();
+    BaseEyeHeight = RealityCameraComponent->RealityCameraTuning.BaseOffset.Z;
 }
 
 void ANCPlayerCharacter::ApplyInputMappingContexts() const
 {
-	const APlayerController* PlayerController = Cast<APlayerController>(Controller);
-	if (PlayerController == nullptr || PlayerController->IsLocalController() == false)
-	{
-		return;
-	}
+    const APlayerController* PlayerController = Cast<APlayerController>(Controller);
+    if (PlayerController == nullptr || PlayerController->IsLocalController() == false)
+    {
+        return;
+    }
 
-	const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
-	if (LocalPlayer == nullptr)
-	{
-		return;
-	}
+    const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
+    if (LocalPlayer == nullptr)
+    {
+        return;
+    }
 
-	UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
-		LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-	if (InputSubsystem == nullptr)
-	{
-		return;
-	}
+    UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
+        LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+    if (InputSubsystem == nullptr)
+    {
+        return;
+    }
 
-	if (DefaultInputMappingContext != nullptr)
-	{
-		// Remove then add so restarts stay idempotent without clearing unrelated higher-level contexts.
-		InputSubsystem->RemoveMappingContext(DefaultInputMappingContext);
-		InputSubsystem->AddMappingContext(DefaultInputMappingContext, 0);
-	}
+    if (DefaultInputMappingContext != nullptr)
+    {
+        // Remove then add so restarts stay idempotent without clearing unrelated higher-level contexts.
+        InputSubsystem->RemoveMappingContext(DefaultInputMappingContext);
+        InputSubsystem->AddMappingContext(DefaultInputMappingContext, 0);
+    }
 
-	if (MouseLookInputMappingContext != nullptr)
-	{
-		// Mouse look is layered above the base context so pointer-specific bindings can override shared look input.
-		InputSubsystem->RemoveMappingContext(MouseLookInputMappingContext);
-		InputSubsystem->AddMappingContext(MouseLookInputMappingContext, 1);
-	}
+    if (MouseLookInputMappingContext != nullptr)
+    {
+        // Mouse look is layered above the base context so pointer-specific bindings can override shared look input.
+        InputSubsystem->RemoveMappingContext(MouseLookInputMappingContext);
+        InputSubsystem->AddMappingContext(MouseLookInputMappingContext, 1);
+    }
 }
+
+ANCDoorActor* ANCPlayerCharacter::TraceDoorTarget(FHitResult& OutHit) const
+{
+    OutHit = FHitResult();
+
+    if (RealityCameraComponent == nullptr || GetWorld() == nullptr)
+    {
+        return nullptr;
+    }
+
+    const float TraceDistance = PropInteractorComponent != nullptr
+        ? PropInteractorComponent->PropInteractionTuning.TraceDistance
+        : 350.0f;
+    const FVector TraceStart = RealityCameraComponent->GetComponentLocation();
+    const FVector TraceEnd = TraceStart + (RealityCameraComponent->GetForwardVector() * TraceDistance);
+
+    FCollisionQueryParams QueryParams(TEXT("DoorGrabTrace"), false, this);
+    QueryParams.AddIgnoredActor(this);
+
+    if (GetWorld()->LineTraceSingleByChannel(OutHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams) == false)
+    {
+        return nullptr;
+    }
+
+    return Cast<ANCDoorActor>(OutHit.GetActor());
+}
+
+void ANCPlayerCharacter::RefreshPrecisionInteractionState()
+{
+    if (RealityCameraComponent == nullptr)
+    {
+        return;
+    }
+
+    const bool bPrecisionInteractionActive = ActiveGrabbedDoor != nullptr
+        || (PropInteractorComponent != nullptr && PropInteractorComponent->IsHoldingProp());
+    RealityCameraComponent->SetPrecisionInteractionEnabled(bPrecisionInteractionActive);
+}
+

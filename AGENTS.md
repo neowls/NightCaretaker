@@ -17,6 +17,8 @@
 - Follow Unreal naming/style conventions (U/A/F/E/T prefixes, PascalCase types, camelCase locals).
 - Prefer composition over inheritance where practical.
 - Keep headers minimal; reduce include dependencies (use forward declarations).
+- Avoid anonymous namespaces in project code unless there is a strong, explicitly stated reason.
+- Avoid static in project code except for cvar registration; prefer member variables or explicit data flow instead.
 - For UObject lifetime, use UE-safe ownership patterns and GC-aware pointers.
 - Minimize `IsValid` checks in core logic paths; use them only at uncertain ownership/lifetime boundaries (async callbacks, weak refs, external inputs).
 - In logic that should be valid by design, prefer fail-fast invariants (`check`, `checkf`, `verifyf`) so rare invalid states produce actionable crash points.
@@ -71,3 +73,6 @@
   - `rg ...; if ($LASTEXITCODE -eq 1) { exit 0 } elseif ($LASTEXITCODE -ge 2) { exit $LASTEXITCODE }`
 - Fall back to PowerShell search only when `rg` is unavailable or exit code is `>=2`.
 - Scope large searches to target roots (for example `Source`, specific plugin folders) to avoid expensive repository-wide scans.
+
+
+
