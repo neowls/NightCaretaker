@@ -1,0 +1,400 @@
+﻿# PropertyNames Korean translation.
+# Fill out your copyright notice in the Description page of Project Settings.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: PropertyNames\n"
+"POT-Creation-Date: 2026-03-22 08:23\n"
+"PO-Revision-Date: 2026-03-22 08:23\n"
+"Language-Team: \n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. Key:	NCRealityCameraComponent:ApplyRuntimeTuning.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member ApplyRuntimeTuning in NCRealityCameraComponent (type: Function, owner: ApplyRuntimeTuning)
+#: Meta-data for key DisplayName of member ApplyRuntimeTuning in NCRealityCameraComponent (type: Function, owner: ApplyRuntimeTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraComponent:ApplyRuntimeTuning.DisplayName"
+msgid "Apply Runtime Tuning"
+msgstr "런타임 튜닝 적용"
+
+#. Key:	NCRealityCameraTuning:BaseFOV.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member BaseFOV in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member BaseFOV in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:BaseFOV.DisplayName"
+msgid "Base Field Of View"
+msgstr "기본 시야각"
+
+#. Key:	NCRealityCameraTuning:BaseOffset.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member BaseOffset in NCRealityCameraTuning (type: StructProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member BaseOffset in NCRealityCameraTuning (type: StructProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:BaseOffset.DisplayName"
+msgid "Base Offset"
+msgstr "기본 오프셋"
+
+#. Key:	NCRealityCameraComponent:SetPrecisionInteractionEnabled:bEnabled.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member bEnabled in NCRealityCameraComponent:SetPrecisionInteractionEnabled (type: BoolProperty, owner: SetPrecisionInteractionEnabled)
+#: Meta-data for key DisplayName of member bEnabled in NCRealityCameraComponent:SetPrecisionInteractionEnabled (type: BoolProperty, owner: SetPrecisionInteractionEnabled)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraComponent:SetPrecisionInteractionEnabled:bEnabled.DisplayName"
+msgid "Enabled"
+msgstr "활성화"
+
+#. Key:	NCRealityCameraTuning:bEnablePostProcess.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member bEnablePostProcess in NCRealityCameraTuning (type: BoolProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member bEnablePostProcess in NCRealityCameraTuning (type: BoolProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:bEnablePostProcess.DisplayName"
+msgid "Enable Post Process"
+msgstr "후처리 활성화"
+
+#. Key:	NCRealityCameraTuning:ChromaticAberrationIntensity.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member ChromaticAberrationIntensity in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member ChromaticAberrationIntensity in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:ChromaticAberrationIntensity.DisplayName"
+msgid "Chromatic Aberration Intensity"
+msgstr "색수차 강도"
+
+#. Key:	NCPlayerCharacter:DefaultInputMappingContext.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member DefaultInputMappingContext in NCPlayerCharacter (type: ObjectProperty, owner: NCPlayerCharacter)
+#: Meta-data for key DisplayName of member DefaultInputMappingContext in NCPlayerCharacter (type: ObjectProperty, owner: NCPlayerCharacter)
+msgctxt "NightCaretaker.Editor.Metadata,NCPlayerCharacter:DefaultInputMappingContext.DisplayName"
+msgid "Default Input Mapping Context"
+msgstr "기본 입력 매핑 컨텍스트"
+
+#. Key:	NCRealityCameraTuning:IdleNoiseFrequency.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member IdleNoiseFrequency in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member IdleNoiseFrequency in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:IdleNoiseFrequency.DisplayName"
+msgid "Idle Noise Frequency"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:IdleNoiseLocationAmplitude.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member IdleNoiseLocationAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member IdleNoiseLocationAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:IdleNoiseLocationAmplitude.DisplayName"
+msgid "Idle Noise Location Amplitude"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:IdleNoiseRotationAmplitude.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member IdleNoiseRotationAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member IdleNoiseRotationAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:IdleNoiseRotationAmplitude.DisplayName"
+msgid "Idle Noise Rotation Amplitude"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:InteractionDampingFactor.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member InteractionDampingFactor in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member InteractionDampingFactor in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:InteractionDampingFactor.DisplayName"
+msgid "Interaction Damping Factor"
+msgstr ""
+
+#. Key:	NCRealityCameraComponent:IsPrecisionInteractionEnabled.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member IsPrecisionInteractionEnabled in NCRealityCameraComponent (type: Function, owner: IsPrecisionInteractionEnabled)
+#: Meta-data for key DisplayName of member IsPrecisionInteractionEnabled in NCRealityCameraComponent (type: Function, owner: IsPrecisionInteractionEnabled)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraComponent:IsPrecisionInteractionEnabled.DisplayName"
+msgid "Is Precision Interaction Enabled"
+msgstr ""
+
+#. Key:	NCPlayerCharacter:LookInputAction.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member LookInputAction in NCPlayerCharacter (type: ObjectProperty, owner: NCPlayerCharacter)
+#: Meta-data for key DisplayName of member LookInputAction in NCPlayerCharacter (type: ObjectProperty, owner: NCPlayerCharacter)
+msgctxt "NightCaretaker.Editor.Metadata,NCPlayerCharacter:LookInputAction.DisplayName"
+msgid "Look Input Action"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:MaxRollDegrees.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member MaxRollDegrees in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member MaxRollDegrees in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:MaxRollDegrees.DisplayName"
+msgid "Max Roll Degrees"
+msgstr ""
+
+#. Key:	NCPlayerCharacter:MouseLookInputAction.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member MouseLookInputAction in NCPlayerCharacter (type: ObjectProperty, owner: NCPlayerCharacter)
+#: Meta-data for key DisplayName of member MouseLookInputAction in NCPlayerCharacter (type: ObjectProperty, owner: NCPlayerCharacter)
+msgctxt "NightCaretaker.Editor.Metadata,NCPlayerCharacter:MouseLookInputAction.DisplayName"
+msgid "Mouse Look Input Action"
+msgstr ""
+
+#. Key:	NCPlayerCharacter:MouseLookInputMappingContext.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member MouseLookInputMappingContext in NCPlayerCharacter (type: ObjectProperty, owner: NCPlayerCharacter)
+#: Meta-data for key DisplayName of member MouseLookInputMappingContext in NCPlayerCharacter (type: ObjectProperty, owner: NCPlayerCharacter)
+msgctxt "NightCaretaker.Editor.Metadata,NCPlayerCharacter:MouseLookInputMappingContext.DisplayName"
+msgid "Mouse Look Input Mapping Context"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:MoveFOVBoostMax.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member MoveFOVBoostMax in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member MoveFOVBoostMax in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:MoveFOVBoostMax.DisplayName"
+msgid "Move FOV Boost Max"
+msgstr ""
+
+#. Key:	NCPlayerCharacter:MoveInputAction.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member MoveInputAction in NCPlayerCharacter (type: ObjectProperty, owner: NCPlayerCharacter)
+#: Meta-data for key DisplayName of member MoveInputAction in NCPlayerCharacter (type: ObjectProperty, owner: NCPlayerCharacter)
+msgctxt "NightCaretaker.Editor.Metadata,NCPlayerCharacter:MoveInputAction.DisplayName"
+msgid "Move Input Action"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:MovementResponseSpeed.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member MovementResponseSpeed in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member MovementResponseSpeed in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:MovementResponseSpeed.DisplayName"
+msgid "Movement Response Speed"
+msgstr ""
+
+#. Key:	NCCharacterBase.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member NCCharacterBase in None (type: Class, owner: NCCharacterBase)
+#: Meta-data for key DisplayName of member NCCharacterBase in None (type: Class, owner: NCCharacterBase)
+msgctxt "NightCaretaker.Editor.Metadata,NCCharacterBase.DisplayName"
+msgid "NCCharacter Base"
+msgstr ""
+
+#. Key:	NCGameInstance.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member NCGameInstance in None (type: Class, owner: NCGameInstance)
+#: Meta-data for key DisplayName of member NCGameInstance in None (type: Class, owner: NCGameInstance)
+msgctxt "NightCaretaker.Editor.Metadata,NCGameInstance.DisplayName"
+msgid "NCGame Instance"
+msgstr ""
+
+#. Key:	NCGameMode.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member NCGameMode in None (type: Class, owner: NCGameMode)
+#: Meta-data for key DisplayName of member NCGameMode in None (type: Class, owner: NCGameMode)
+msgctxt "NightCaretaker.Editor.Metadata,NCGameMode.DisplayName"
+msgid "NCGame Mode"
+msgstr ""
+
+#. Key:	NCGameModeBase.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member NCGameModeBase in None (type: Class, owner: NCGameModeBase)
+#: Meta-data for key DisplayName of member NCGameModeBase in None (type: Class, owner: NCGameModeBase)
+msgctxt "NightCaretaker.Editor.Metadata,NCGameModeBase.DisplayName"
+msgid "NCGame Mode Base"
+msgstr ""
+
+#. Key:	NCGameState.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member NCGameState in None (type: Class, owner: NCGameState)
+#: Meta-data for key DisplayName of member NCGameState in None (type: Class, owner: NCGameState)
+msgctxt "NightCaretaker.Editor.Metadata,NCGameState.DisplayName"
+msgid "NCGame State"
+msgstr ""
+
+#. Key:	NCGameStateBase.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member NCGameStateBase in None (type: Class, owner: NCGameStateBase)
+#: Meta-data for key DisplayName of member NCGameStateBase in None (type: Class, owner: NCGameStateBase)
+msgctxt "NightCaretaker.Editor.Metadata,NCGameStateBase.DisplayName"
+msgid "NCGame State Base"
+msgstr ""
+
+#. Key:	NCPlayerCharacter.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member NCPlayerCharacter in None (type: Class, owner: NCPlayerCharacter)
+#: Meta-data for key DisplayName of member NCPlayerCharacter in None (type: Class, owner: NCPlayerCharacter)
+msgctxt "NightCaretaker.Editor.Metadata,NCPlayerCharacter.DisplayName"
+msgid "NightCaretaker Player Character"
+msgstr ""
+
+#. Key:	NCPlayerController.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member NCPlayerController in None (type: Class, owner: NCPlayerController)
+#: Meta-data for key DisplayName of member NCPlayerController in None (type: Class, owner: NCPlayerController)
+msgctxt "NightCaretaker.Editor.Metadata,NCPlayerController.DisplayName"
+msgid "NCPlayer Controller"
+msgstr ""
+
+#. Key:	NCPlayerControllerBase.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member NCPlayerControllerBase in None (type: Class, owner: NCPlayerControllerBase)
+#: Meta-data for key DisplayName of member NCPlayerControllerBase in None (type: Class, owner: NCPlayerControllerBase)
+msgctxt "NightCaretaker.Editor.Metadata,NCPlayerControllerBase.DisplayName"
+msgid "NCPlayer Controller Base"
+msgstr ""
+
+#. Key:	NCPlayerState.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member NCPlayerState in None (type: Class, owner: NCPlayerState)
+#: Meta-data for key DisplayName of member NCPlayerState in None (type: Class, owner: NCPlayerState)
+msgctxt "NightCaretaker.Editor.Metadata,NCPlayerState.DisplayName"
+msgid "NCPlayer State"
+msgstr ""
+
+#. Key:	NCPlayerStateBase.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member NCPlayerStateBase in None (type: Class, owner: NCPlayerStateBase)
+#: Meta-data for key DisplayName of member NCPlayerStateBase in None (type: Class, owner: NCPlayerStateBase)
+msgctxt "NightCaretaker.Editor.Metadata,NCPlayerStateBase.DisplayName"
+msgid "NCPlayer State Base"
+msgstr ""
+
+#. Key:	NCRealityCameraComponent.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member NCRealityCameraComponent in None (type: Class, owner: NCRealityCameraComponent)
+#: Meta-data for key DisplayName of member NCRealityCameraComponent in None (type: Class, owner: NCRealityCameraComponent)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraComponent.DisplayName"
+msgid "Reality Camera Component"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member NCRealityCameraTuning in None (type: ScriptStruct, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member NCRealityCameraTuning in None (type: ScriptStruct, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning.DisplayName"
+msgid "Reality Camera Tuning"
+msgstr ""
+
+#. Key:	NCRealityCameraComponent:SetRealityCamIntensity:NewIntensity.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member NewIntensity in NCRealityCameraComponent:SetRealityCamIntensity (type: FloatProperty, owner: SetRealityCamIntensity)
+#: Meta-data for key DisplayName of member NewIntensity in NCRealityCameraComponent:SetRealityCamIntensity (type: FloatProperty, owner: SetRealityCamIntensity)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraComponent:SetRealityCamIntensity:NewIntensity.DisplayName"
+msgid "New Intensity"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:PostProcessBlendWeight.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member PostProcessBlendWeight in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member PostProcessBlendWeight in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:PostProcessBlendWeight.DisplayName"
+msgid "Post Process Blend Weight"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:PrecisionModeInterpSpeed.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member PrecisionModeInterpSpeed in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member PrecisionModeInterpSpeed in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:PrecisionModeInterpSpeed.DisplayName"
+msgid "Precision Mode Interp Speed"
+msgstr ""
+
+#. Key:	NCPlayerCharacter:RealityCameraComponent.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member RealityCameraComponent in NCPlayerCharacter (type: ObjectProperty, owner: NCPlayerCharacter)
+#: Meta-data for key DisplayName of member RealityCameraComponent in NCPlayerCharacter (type: ObjectProperty, owner: NCPlayerCharacter)
+msgctxt "NightCaretaker.Editor.Metadata,NCPlayerCharacter:RealityCameraComponent.DisplayName"
+msgid "Reality Camera"
+msgstr ""
+
+#. Key:	NCRealityCameraComponent:RealityCameraTuning.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member RealityCameraTuning in NCRealityCameraComponent (type: StructProperty, owner: NCRealityCameraComponent)
+#: Meta-data for key DisplayName of member RealityCameraTuning in NCRealityCameraComponent (type: StructProperty, owner: NCRealityCameraComponent)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraComponent:RealityCameraTuning.DisplayName"
+msgid "Reality Camera Tuning"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:RealityCamIntensity.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member RealityCamIntensity in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member RealityCamIntensity in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:RealityCamIntensity.DisplayName"
+msgid "Reality Camera Intensity"
+msgstr ""
+
+#. Key:	NCRealityCameraComponent:IsPrecisionInteractionEnabled:ReturnValue.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member ReturnValue in NCRealityCameraComponent:IsPrecisionInteractionEnabled (type: BoolProperty, owner: IsPrecisionInteractionEnabled)
+#: Meta-data for key DisplayName of member ReturnValue in NCRealityCameraComponent:IsPrecisionInteractionEnabled (type: BoolProperty, owner: IsPrecisionInteractionEnabled)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraComponent:IsPrecisionInteractionEnabled:ReturnValue.DisplayName"
+msgid "Return Value"
+msgstr ""
+
+#. Key:	NCPlayerCharacter:RunSpeed.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member RunSpeed in NCPlayerCharacter (type: FloatProperty, owner: NCPlayerCharacter)
+#: Meta-data for key DisplayName of member RunSpeed in NCPlayerCharacter (type: FloatProperty, owner: NCPlayerCharacter)
+msgctxt "NightCaretaker.Editor.Metadata,NCPlayerCharacter:RunSpeed.DisplayName"
+msgid "Run Speed"
+msgstr ""
+
+#. Key:	NCRealityCameraComponent:SetPrecisionInteractionEnabled.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member SetPrecisionInteractionEnabled in NCRealityCameraComponent (type: Function, owner: SetPrecisionInteractionEnabled)
+#: Meta-data for key DisplayName of member SetPrecisionInteractionEnabled in NCRealityCameraComponent (type: Function, owner: SetPrecisionInteractionEnabled)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraComponent:SetPrecisionInteractionEnabled.DisplayName"
+msgid "Set Precision Interaction Enabled"
+msgstr ""
+
+#. Key:	NCRealityCameraComponent:SetRealityCamIntensity.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member SetRealityCamIntensity in NCRealityCameraComponent (type: Function, owner: SetRealityCamIntensity)
+#: Meta-data for key DisplayName of member SetRealityCamIntensity in NCRealityCameraComponent (type: Function, owner: SetRealityCamIntensity)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraComponent:SetRealityCamIntensity.DisplayName"
+msgid "Set Reality Camera Intensity"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:StartStopLocationAmplitude.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member StartStopLocationAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member StartStopLocationAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:StartStopLocationAmplitude.DisplayName"
+msgid "Start Stop Location Amplitude"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:StartStopPitchAmplitude.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member StartStopPitchAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member StartStopPitchAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:StartStopPitchAmplitude.DisplayName"
+msgid "Start Stop Pitch Amplitude"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:StartStopRecoverySpeed.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member StartStopRecoverySpeed in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member StartStopRecoverySpeed in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:StartStopRecoverySpeed.DisplayName"
+msgid "Start Stop Recovery Speed"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:StartStopResponseSpeed.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member StartStopResponseSpeed in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member StartStopResponseSpeed in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:StartStopResponseSpeed.DisplayName"
+msgid "Start Stop Response Speed"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:StrafeSwayLocationAmplitude.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member StrafeSwayLocationAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member StrafeSwayLocationAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:StrafeSwayLocationAmplitude.DisplayName"
+msgid "Strafe Sway Location Amplitude"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:StrafeSwayYawAmplitude.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member StrafeSwayYawAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member StrafeSwayYawAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:StrafeSwayYawAmplitude.DisplayName"
+msgid "Strafe Sway Yaw Amplitude"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:TurnLagSpeed.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member TurnLagSpeed in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member TurnLagSpeed in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:TurnLagSpeed.DisplayName"
+msgid "Turn Lag Speed"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:TurnPitchLagDegrees.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member TurnPitchLagDegrees in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member TurnPitchLagDegrees in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:TurnPitchLagDegrees.DisplayName"
+msgid "Turn Pitch Lag Degrees"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:TurnYawLagDegrees.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member TurnYawLagDegrees in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member TurnYawLagDegrees in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:TurnYawLagDegrees.DisplayName"
+msgid "Turn Yaw Lag Degrees"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:VignetteIntensity.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member VignetteIntensity in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member VignetteIntensity in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:VignetteIntensity.DisplayName"
+msgid "Vignette Intensity"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:WalkBobFrequency.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member WalkBobFrequency in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member WalkBobFrequency in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:WalkBobFrequency.DisplayName"
+msgid "Walk Bob Frequency"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:WalkBobLocationAmplitude.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member WalkBobLocationAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member WalkBobLocationAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:WalkBobLocationAmplitude.DisplayName"
+msgid "Walk Bob Location Amplitude"
+msgstr ""
+
+#. Key:	NCRealityCameraTuning:WalkBobRotationAmplitude.DisplayName
+#. SourceLocation:	Meta-data for key DisplayName of member WalkBobRotationAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+#: Meta-data for key DisplayName of member WalkBobRotationAmplitude in NCRealityCameraTuning (type: FloatProperty, owner: NCRealityCameraTuning)
+msgctxt "NightCaretaker.Editor.Metadata,NCRealityCameraTuning:WalkBobRotationAmplitude.DisplayName"
+msgid "Walk Bob Rotation Amplitude"
+msgstr ""
+

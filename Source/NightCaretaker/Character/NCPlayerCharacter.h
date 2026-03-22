@@ -1,33 +1,32 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "NCCharacterBase.h"
 #include "NCPlayerCharacter.generated.h"
 
-class UCameraComponent;
+class UNCRealityCameraComponent;
 class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
 
 /**
- * Full Body First Person playable character used by the default runtime flow.
- * The owner sees the same body mesh that the world sees, while camera placement and control settings
- * are tuned for first person movement and look input with no jump support.
+ * Default playable character used by the runtime flow.
+ * The pawn keeps a mesh-free first person presentation and relies on RealityCam motion for moment-to-moment feel.
  */
-UCLASS()
+UCLASS(BlueprintType, Blueprintable, meta = (DisplayName = "NightCaretaker Player Character", ToolTip = "Default playable character that uses the mesh-free RealityCam presentation."))
 class NIGHTCARETAKER_API ANCPlayerCharacter : public ANCCharacterBase
 {
 	GENERATED_BODY()
 
 public:
-	/** Creates the default full body first person character and assigns project input defaults. */
+	/** Creates the default runtime character and assigns project input defaults. */
 	ANCPlayerCharacter();
 
 protected:
 	/**
 	 * Applies editable runtime settings after components are fully initialized.
-	 * This keeps Blueprint-overridden movement speed and camera offset in sync with actual components.
+	 * This keeps Blueprint-overridden movement speed and RealityCam tuning in sync with actual components.
 	 */
 	virtual void PostInitializeComponents() override;
 
@@ -59,39 +58,35 @@ protected:
 	/** Adds the configured mapping contexts to the owning local player subsystem. */
 	void ApplyInputMappingContexts() const;
 
-	/** Synchronizes editable first person settings with the camera and movement component. */
-	void RefreshFirstPersonRuntimeSettings();
+	/** Synchronizes editable movement and RealityCam settings with runtime components. */
+	void RefreshRealityCameraSettings();
 
 protected:
-	/** Camera used for the Full Body First Person viewpoint. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "First Person")
-	TObjectPtr<UCameraComponent> FirstPersonCameraComponent;
+	/** Camera used for the mesh-free RealityCam viewpoint. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RealityCam", meta = (DisplayName = "Reality Camera", ToolTip = "Camera component used for the mesh-free RealityCam viewpoint."))
+	TObjectPtr<UNCRealityCameraComponent> RealityCameraComponent;
 
 	/** Default movement mapping context used for locomotion input. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (DisplayName = "Default Input Mapping Context", ToolTip = "Default mapping context used for locomotion and general gameplay input."))
 	TObjectPtr<UInputMappingContext> DefaultInputMappingContext;
 
 	/** Optional mouse-specific mapping context layered on top of the base mapping. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (DisplayName = "Mouse Look Input Mapping Context", ToolTip = "Optional mouse-specific mapping context layered on top of the base mapping."))
 	TObjectPtr<UInputMappingContext> MouseLookInputMappingContext;
 
 	/** Move action expected to deliver an Axis2D value. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (DisplayName = "Move Input Action", ToolTip = "Input action expected to deliver a two-dimensional locomotion value."))
 	TObjectPtr<UInputAction> MoveInputAction;
 
 	/** Look action expected to deliver an Axis2D value, typically for gamepad or shared look input. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (DisplayName = "Look Input Action", ToolTip = "Input action expected to deliver a two-dimensional look value for shared or gamepad input."))
 	TObjectPtr<UInputAction> LookInputAction;
 
 	/** Mouse look action expected to deliver an Axis2D value. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (DisplayName = "Mouse Look Input Action", ToolTip = "Mouse-specific look action expected to deliver a two-dimensional look value."))
 	TObjectPtr<UInputAction> MouseLookInputAction;
 
 	/** Single locomotion speed used by this prototype, tuned as a running pace. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (ClampMin = "0.0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (DisplayName = "Run Speed", ToolTip = "Default locomotion speed used by the current prototype character.", ClampMin = "0.0"))
 	float RunSpeed;
-
-	/** Local camera offset used to keep the view slightly ahead of the full body mesh. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "First Person")
-	FVector FirstPersonCameraOffset;
 };

@@ -3,8 +3,7 @@
 
 #include "NCPlayerCharacter.h"
 
-#include "Animation/AnimInstance.h"
-#include "Camera/CameraComponent.h"
+#include "../Camera/NCRealityCameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -19,7 +18,7 @@
 
 ANCPlayerCharacter::ANCPlayerCharacter()
 {
-	// Use the standard mannequin capsule so animation assets line up with predictable character proportions.
+	// Use the standard mannequin capsule so collision and interaction distances stay predictable.
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
 
 	bUseControllerRotationPitch = false;
@@ -27,7 +26,6 @@ ANCPlayerCharacter::ANCPlayerCharacter()
 	bUseControllerRotationRoll = false;
 
 	RunSpeed = 450.0f;
-	FirstPersonCameraOffset = FVector(10.0f, 0.0f, 64.0f);
 
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 	check(CharacterMovementComponent != nullptr);
@@ -41,13 +39,11 @@ ANCPlayerCharacter::ANCPlayerCharacter()
 
 	JumpMaxCount = 0;
 	JumpMaxHoldTime = 0.0f;
-	BaseEyeHeight = FirstPersonCameraOffset.Z;
 
-	// Keep the camera on the capsule so the prototype stays mesh-agnostic while still showing the full body.
-	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
-	FirstPersonCameraComponent->SetRelativeLocation(FirstPersonCameraOffset);
-	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+	RealityCameraComponent = CreateDefaultSubobject<UNCRealityCameraComponent>(TEXT("RealityCamera"));
+	RealityCameraComponent->SetupAttachment(GetCapsuleComponent());
+	RealityCameraComponent->ApplyRuntimeTuning();
+	BaseEyeHeight = RealityCameraComponent->RealityCameraTuning.BaseOffset.Z;
 
 	USkeletalMeshComponent* CharacterMesh = GetMesh();
 	check(CharacterMesh != nullptr);
@@ -55,25 +51,12 @@ ANCPlayerCharacter::ANCPlayerCharacter()
 	CharacterMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
 	CharacterMesh->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 	CharacterMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CharacterMesh->SetCastShadow(true);
-	CharacterMesh->bOwnerNoSee = false;
+	CharacterMesh->SetHiddenInGame(true, true);
+	CharacterMesh->SetVisibility(false, true);
+	CharacterMesh->SetCastShadow(false);
+	CharacterMesh->bOwnerNoSee = true;
 	CharacterMesh->bCastHiddenShadow = false;
-	CharacterMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
-
-	// Provide usable prototype defaults so the C++ pawn works immediately without a Blueprint setup pass.
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MannyMeshFinder(
-		TEXT("/Game/Characters/Mannequins/Meshes/SKM_Manny_Simple.SKM_Manny_Simple"));
-	if (MannyMeshFinder.Succeeded())
-	{
-		CharacterMesh->SetSkeletalMesh(MannyMeshFinder.Object);
-	}
-
-	static ConstructorHelpers::FClassFinder<UAnimInstance> UnarmedAnimBlueprintFinder(
-		TEXT("/Game/Characters/Mannequins/Anims/Unarmed/ABP_Unarmed"));
-	if (UnarmedAnimBlueprintFinder.Succeeded())
-	{
-		CharacterMesh->SetAnimInstanceClass(UnarmedAnimBlueprintFinder.Class);
-	}
+	CharacterMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextFinder(
 		TEXT("/Game/NightCaretaker/Input/IMC_Default.IMC_Default"));
@@ -115,7 +98,7 @@ void ANCPlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	RefreshFirstPersonRuntimeSettings();
+	RefreshRealityCameraSettings();
 }
 
 void ANCPlayerCharacter::PawnClientRestart()
@@ -158,7 +141,7 @@ void ANCPlayerCharacter::Move(const FInputActionValue& Value)
 
 	check(Controller != nullptr);
 
-	// Full Body First Person movement uses controller yaw so the body and view stay aligned.
+	// RealityCam movement still follows controller yaw so navigation remains direct and readable.
 	const FRotator ControlRotation = Controller->GetControlRotation();
 	const FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
 
@@ -181,17 +164,15 @@ void ANCPlayerCharacter::Look(const FInputActionValue& Value)
 	AddControllerPitchInput(LookAxis.Y);
 }
 
-void ANCPlayerCharacter::RefreshFirstPersonRuntimeSettings()
+void ANCPlayerCharacter::RefreshRealityCameraSettings()
 {
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 	check(CharacterMovementComponent != nullptr);
+	check(RealityCameraComponent != nullptr);
 
-	check(FirstPersonCameraComponent != nullptr);
-
-	// Editable defaults may be overridden by a Blueprint child, so re-apply them after initialization.
 	CharacterMovementComponent->MaxWalkSpeed = RunSpeed;
-	BaseEyeHeight = FirstPersonCameraOffset.Z;
-	FirstPersonCameraComponent->SetRelativeLocation(FirstPersonCameraOffset);
+	RealityCameraComponent->ApplyRuntimeTuning();
+	BaseEyeHeight = RealityCameraComponent->RealityCameraTuning.BaseOffset.Z;
 }
 
 void ANCPlayerCharacter::ApplyInputMappingContexts() const
