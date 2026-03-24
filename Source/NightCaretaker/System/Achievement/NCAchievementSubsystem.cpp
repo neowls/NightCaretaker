@@ -103,6 +103,7 @@ FNCAchievementWriteResult UNCAchievementSubsystem::SubmitAchievementWrite(const 
         return Result;
     }
 
+    AchievementBackend->RecordSuccessfulWrite(AchievementDefinition, AchievementDefinition->DefaultWriteMode, WriteRequest.ProgressValue);
     Result.ResultType = ENCAchievementWriteResultType::Success;
     Result.Message = TEXT("Achievement write dispatched.");
     ConsumeWriteIdIfNeeded(WriteRequest, ConsumedWriteIds, Result);
@@ -207,3 +208,5 @@ void UNCAchievementSubsystem::ConsumeWriteIdIfNeeded(const FNCAchievementWriteRe
     ConsumedWriteIds->Add(WriteRequest.WriteId);
     InOutResult.bConsumedWriteId = true;
 }
+
+

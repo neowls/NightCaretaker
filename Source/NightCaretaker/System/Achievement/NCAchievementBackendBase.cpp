@@ -27,7 +27,6 @@ bool UNCAchievementBackendBase::DispatchAchievementWrite_Implementation(const UN
     switch (WriteMode)
     {
     case ENCAchievementWriteMode::Unlock:
-        RecordUnlock(AchievementDefinition->AchievementId);
         return true;
 
     case ENCAchievementWriteMode::IncrementStat:
@@ -36,16 +35,6 @@ bool UNCAchievementBackendBase::DispatchAchievementWrite_Implementation(const UN
             OutFailureReason = TEXT("Steam stat API name is empty for IncrementStat.");
             return false;
         }
-
-        RecordIncrementStat(FName(*AchievementDefinition->SteamStatApiName), ProgressValue);
-        if (!AchievementDefinition->SteamAchievementApiName.IsEmpty() && AchievementDefinition->SteamUnlockThreshold > 0)
-        {
-            const int32 CurrentValue = LocalStatValues.FindRef(FName(*AchievementDefinition->SteamStatApiName));
-            if (CurrentValue >= AchievementDefinition->SteamUnlockThreshold)
-            {
-                RecordUnlock(AchievementDefinition->AchievementId);
-            }
-        }
         return true;
 
     case ENCAchievementWriteMode::SetStat:
@@ -53,12 +42,6 @@ bool UNCAchievementBackendBase::DispatchAchievementWrite_Implementation(const UN
         {
             OutFailureReason = TEXT("Steam stat API name is empty for SetStat.");
             return false;
-        }
-
-        RecordSetStat(FName(*AchievementDefinition->SteamStatApiName), ProgressValue);
-        if (!AchievementDefinition->SteamAchievementApiName.IsEmpty() && AchievementDefinition->SteamUnlockThreshold > 0 && ProgressValue >= AchievementDefinition->SteamUnlockThreshold)
-        {
-            RecordUnlock(AchievementDefinition->AchievementId);
         }
         return true;
 
@@ -97,6 +80,50 @@ FNCAchievementDebugSnapshot UNCAchievementBackendBase::GetDebugSnapshot() const
     }
 
     return Snapshot;
+}
+
+void UNCAchievementBackendBase::RecordSuccessfulWrite(const UNCAchievementDefinition* AchievementDefinition, const ENCAchievementWriteMode WriteMode, const int32 ProgressValue)
+{
+    if (AchievementDefinition == nullptr)
+    {
+        return;
+    }
+
+    switch (WriteMode)
+    {
+    case ENCAchievementWriteMode::Unlock:
+        RecordUnlock(AchievementDefinition->AchievementId);
+        break;
+
+    case ENCAchievementWriteMode::IncrementStat:
+        if (!AchievementDefinition->SteamStatApiName.IsEmpty())
+        {
+            RecordIncrementStat(FName(*AchievementDefinition->SteamStatApiName), ProgressValue);
+            if (!AchievementDefinition->SteamAchievementApiName.IsEmpty() && AchievementDefinition->SteamUnlockThreshold > 0)
+            {
+                const int32 CurrentValue = LocalStatValues.FindRef(FName(*AchievementDefinition->SteamStatApiName));
+                if (CurrentValue >= AchievementDefinition->SteamUnlockThreshold)
+                {
+                    RecordUnlock(AchievementDefinition->AchievementId);
+                }
+            }
+        }
+        break;
+
+    case ENCAchievementWriteMode::SetStat:
+        if (!AchievementDefinition->SteamStatApiName.IsEmpty())
+        {
+            RecordSetStat(FName(*AchievementDefinition->SteamStatApiName), ProgressValue);
+            if (!AchievementDefinition->SteamAchievementApiName.IsEmpty() && AchievementDefinition->SteamUnlockThreshold > 0 && ProgressValue >= AchievementDefinition->SteamUnlockThreshold)
+            {
+                RecordUnlock(AchievementDefinition->AchievementId);
+            }
+        }
+        break;
+
+    default:
+        break;
+    }
 }
 
 void UNCAchievementBackendBase::RecordUnlock(const FName AchievementId)

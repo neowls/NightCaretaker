@@ -36,6 +36,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Achievement")
     FNCAchievementDebugSnapshot GetDebugSnapshot() const;
 
+    /** Records a successful write into the local debug cache, independent of backend implementation details. */
+    void RecordSuccessfulWrite(const UNCAchievementDefinition* AchievementDefinition, ENCAchievementWriteMode WriteMode, int32 ProgressValue);
+
 protected:
     virtual bool InitializeBackend_Implementation(UGameInstance* InGameInstance);
     virtual void ShutdownBackend_Implementation();
