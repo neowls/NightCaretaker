@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,6 +6,7 @@
 #include "NCPlayerCharacter.generated.h"
 
 class ANCDoorActor;
+class UNCPlayerCharacterMovementComponent;
 class UNCPropInteractorComponent;
 class UNCRealityCameraComponent;
 class UInputAction;
@@ -25,7 +26,7 @@ class NIGHTCARETAKER_API ANCPlayerCharacter : public ANCCharacterBase
 
 public:
     /** Creates the default runtime character and assigns project input defaults. */
-    ANCPlayerCharacter();
+    ANCPlayerCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
     /** Keeps active door-grab state synchronized with the current runtime door state. */
@@ -45,7 +46,7 @@ protected:
     virtual void PawnClientRestart() override;
 
     /**
-     * Binds movement, look, and physics carry input actions for the runtime character.
+     * Binds movement, look, sprint, and physics carry input actions for the runtime character.
      * @param PlayerInputComponent Input component created for this pawn. Expected to be an Enhanced Input component.
      */
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -62,6 +63,12 @@ protected:
      */
     void Look(const FInputActionValue& Value);
 
+    /** Requests sprint locomotion while the sprint input is held. */
+    void BeginSprint();
+
+    /** Clears the active sprint input request. */
+    void EndSprint();
+
     /** Attempts to begin holding a physics prop or directly dragging a door. */
     void BeginGrabHold();
 
@@ -74,11 +81,17 @@ protected:
     /** Synchronizes editable movement and RealityCam settings with runtime components. */
     void RefreshRealityCameraSettings();
 
+    /** Synchronizes sprint blocking with the current interaction state. */
+    void RefreshSprintBlockState();
+
     /** Traces the RealityCam view and returns the first directly targeted door actor, if any. */
     ANCDoorActor* TraceDoorTarget(FHitResult& OutHit) const;
 
     /** Restores the RealityCam precision damping state after grab interactions end. */
     void RefreshPrecisionInteractionState();
+
+    /** Returns the typed player movement component used by this pawn. */
+    UNCPlayerCharacterMovementComponent* GetNCMovementComponent() const;
 
 protected:
     /** Camera used for the mesh-free RealityCam viewpoint. */
@@ -117,9 +130,17 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (DisplayName = "Grab Input Action", ToolTip = "Input action used to hold and release physics props or directly drag physical doors."))
     TObjectPtr<UInputAction> GrabHoldInputAction;
 
-    /** Single locomotion speed used by this prototype, tuned as a running pace. */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (DisplayName = "Run Speed", ToolTip = "Default locomotion speed used by the current prototype character.", ClampMin = "0.0"))
+    /** Input action used to hold sprint locomotion. */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (DisplayName = "Sprint Input Action", ToolTip = "Input action used to hold sprint locomotion while the current state allows it."))
+    TObjectPtr<UInputAction> SprintInputAction;
+
+    /** Base locomotion speed used while sprint is inactive. */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (DisplayName = "Walk Speed", ToolTip = "Base locomotion speed used while sprint is inactive.", ClampMin = "0.0"))
     float RunSpeed;
+
+    /** Faster locomotion speed used while sprint input is held and allowed. */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (DisplayName = "Sprint Speed", ToolTip = "Faster locomotion speed used while sprint input is held and the current state allows sprinting.", ClampMin = "0.0"))
+    float SprintSpeed;
 
 private:
     /** Door currently being direct-grab dragged by the shared Physics Handle. */

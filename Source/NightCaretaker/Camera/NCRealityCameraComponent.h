@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -18,23 +18,23 @@ struct FNCRealityCameraTuning
 	GENERATED_BODY()
 
 	/** Global intensity multiplier for all procedural RealityCam motion. Zero falls back to a near-static camera. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam", meta = (DisplayName = "Reality Camera Intensity", ToolTip = "Controls the overall intensity of procedural RealityCam motion. Zero falls back to a near-static camera.", ClampMin = "0.0", ClampMax = "1.0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Base", meta = (DisplayName = "Reality Camera Intensity", ToolTip = "Controls the overall intensity of procedural RealityCam motion. Zero falls back to a near-static camera.", ClampMin = "0.0", ClampMax = "1.0"))
 	float RealityCamIntensity = 0.65f;
 
 	/** Resting offset of the camera relative to the owning pawn capsule. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam", meta = (DisplayName = "Base Offset", ToolTip = "Defines the resting camera offset relative to the owning pawn capsule."))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Base", meta = (DisplayName = "Base Offset", ToolTip = "Defines the resting camera offset relative to the owning pawn capsule."))
 	FVector BaseOffset = FVector(10.0f, 0.0f, 64.0f);
 
 	/** Baseline field of view used before movement-driven widening is applied. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam", meta = (DisplayName = "Base Field Of View", ToolTip = "Defines the baseline field of view before movement-driven widening is applied.", ClampMin = "1.0", ClampMax = "170.0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Base", meta = (DisplayName = "Base Field Of View", ToolTip = "Defines the baseline field of view before movement-driven widening is applied.", ClampMin = "1.0", ClampMax = "170.0"))
 	float BaseFOV = 90.0f;
 
 	/** Maximum extra FOV added while moving at full prototype walk speed. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam", meta = (DisplayName = "Move FOV Boost Max", ToolTip = "Defines the maximum additional field of view applied while moving at full walk speed.", ClampMin = "0.0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Base", meta = (DisplayName = "Move FOV Boost Max", ToolTip = "Defines the maximum additional field of view applied while moving at full walk speed.", ClampMin = "0.0"))
 	float MoveFOVBoostMax = 1.5f;
 
 	/** Interpolation speed used to smooth movement-driven camera responses. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam", meta = (DisplayName = "Movement Response Speed", ToolTip = "Controls how quickly movement-driven camera responses are smoothed toward their targets.", ClampMin = "0.0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Base", meta = (DisplayName = "Movement Response Speed", ToolTip = "Controls how quickly movement-driven camera responses are smoothed toward their targets.", ClampMin = "0.0"))
 	float MovementResponseSpeed = 10.0f;
 
 	/** Small positional noise that keeps the camera from feeling mechanically rigid while idle. */
@@ -47,19 +47,27 @@ struct FNCRealityCameraTuning
 
 	/** Base playback frequency for idle procedural noise. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Idle", meta = (DisplayName = "Idle Noise Frequency", ToolTip = "Controls how quickly idle procedural noise evolves over time.", ClampMin = "0.0"))
-	float IdleNoiseFrequency = 0.9f;
+	float IdleNoiseFrequency = 0.7f;
 
 	/** Vertical walk bob amplitude applied at maximum normalized walk speed. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Locomotion", meta = (DisplayName = "Walk Bob Location Amplitude", ToolTip = "Controls the vertical walk bob amplitude at maximum normalized walk speed.", ClampMin = "0.0"))
-	float WalkBobLocationAmplitude = 1.2f;
+	float WalkBobLocationAmplitude = 1.0f;
 
 	/** Pitch response added by the walk cycle at maximum normalized walk speed. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Locomotion", meta = (DisplayName = "Walk Bob Rotation Amplitude", ToolTip = "Controls the pitch response contributed by the walk cycle at maximum normalized walk speed.", ClampMin = "0.0"))
 	float WalkBobRotationAmplitude = 0.45f;
 
-	/** Base walk bob frequency at maximum normalized walk speed. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Locomotion", meta = (DisplayName = "Walk Bob Frequency", ToolTip = "Controls the base walk bob frequency used while moving.", ClampMin = "0.0"))
-	float WalkBobFrequency = 0.5f;
+	/** Shared bob frequency used when state-specific overrides are not supplied. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Locomotion", meta = (DisplayName = "Base Bob Frequency", ToolTip = "Controls the shared bob frequency used when state-specific overrides are not supplied.", ClampMin = "0.0"))
+	float BaseBobFrequency = 0.5f;
+
+	/** Optional walk bob frequency override. Values less than or equal to zero fall back to Base Bob Frequency. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Locomotion", meta = (DisplayName = "Walk Bob Frequency Override", ToolTip = "Overrides the walk bob frequency. Values less than or equal to zero fall back to Base Bob Frequency.", ClampMin = "0.0"))
+	float WalkBobFrequencyOverride = 0.0f;
+
+	/** Optional sprint bob frequency override. Values less than or equal to zero fall back to Base Bob Frequency. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Sprint", meta = (DisplayName = "Sprint Bob Frequency Override", ToolTip = "Overrides the sprint bob frequency. Values less than or equal to zero fall back to Base Bob Frequency.", ClampMin = "0.0"))
+	float SprintBobFrequencyOverride = 1.2f;
 
 	/** Lateral camera translation applied against strafe direction. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Locomotion", meta = (DisplayName = "Strafe Sway Location Amplitude", ToolTip = "Controls the lateral camera translation applied against the strafe direction.", ClampMin = "0.0"))
@@ -72,6 +80,14 @@ struct FNCRealityCameraTuning
 	/** Maximum roll contribution caused by strafing. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Locomotion", meta = (DisplayName = "Max Roll Degrees", ToolTip = "Defines the maximum roll contribution created by strafing motion.", ClampMin = "0.0"))
 	float MaxRollDegrees = 1.5f;
+
+	/** Extra walk bob scale applied while sprint locomotion is active. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Sprint", meta = (DisplayName = "Sprint Bob Scale", ToolTip = "Controls how much the locomotion bob intensifies while sprint locomotion is active.", ClampMin = "0.0"))
+	float SprintBobScale = 1.2f;
+
+	/** Additional field of view boost applied while sprint locomotion is active. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Sprint", meta = (DisplayName = "Sprint FOV Boost Extra", ToolTip = "Controls the additional field of view boost applied while sprint locomotion is active.", ClampMin = "0.0"))
+	float SprintFOVBoostExtra = 8.5f;
 
 	/** Maximum yaw offset created by quick camera turns. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RealityCam|Rotation", meta = (DisplayName = "Turn Yaw Lag Degrees", ToolTip = "Defines the maximum yaw offset created by quick camera turns.", ClampMin = "0.0"))
@@ -221,4 +237,5 @@ private:
 	/** Tracks whether precision interaction damping should be active. */
 	bool bPrecisionInteractionEnabled;
 };
+
 

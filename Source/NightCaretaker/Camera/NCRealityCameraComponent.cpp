@@ -1,8 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "NCRealityCameraComponent.h"
 
+#include "../Character/NCPlayerCharacterMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -97,19 +98,30 @@ void UNCRealityCameraComponent::GetCameraView(const float DeltaTime, FMinimalVie
 	}
 
 	const UCharacterMovementComponent* MovementComponent = OwningCharacter->GetCharacterMovement();
-	const float MaxWalkSpeed =
-		MovementComponent != nullptr ? FMath::Max(MovementComponent->MaxWalkSpeed, 1.0f) : 1.0f;
+	const UNCPlayerCharacterMovementComponent* PlayerMovementComponent = Cast<UNCPlayerCharacterMovementComponent>(MovementComponent);
+	const float NormalizationSpeed = PlayerMovementComponent != nullptr
+		? FMath::Max(PlayerMovementComponent->WalkSpeed, 1.0f)
+		: (MovementComponent != nullptr ? FMath::Max(MovementComponent->MaxWalkSpeed, 1.0f) : 1.0f);
+	const float SprintAlpha = PlayerMovementComponent != nullptr ? PlayerMovementComponent->GetSprintAlpha() : 0.0f;
+	const float SprintMotionScale = FMath::Lerp(1.0f, RealityCameraTuning.SprintBobScale, SprintAlpha);
+	const float WalkBobFrequency = RealityCameraTuning.WalkBobFrequencyOverride > 0.0f
+		? RealityCameraTuning.WalkBobFrequencyOverride
+		: RealityCameraTuning.BaseBobFrequency;
+	const float SprintBobFrequency = RealityCameraTuning.SprintBobFrequencyOverride > 0.0f
+		? RealityCameraTuning.SprintBobFrequencyOverride
+		: RealityCameraTuning.BaseBobFrequency;
+	const float ActiveBobFrequency = FMath::Lerp(WalkBobFrequency, SprintBobFrequency, SprintAlpha);
 
 	const FVector Velocity = OwningCharacter->GetVelocity();
 	const FVector PlanarVelocity(Velocity.X, Velocity.Y, 0.0f);
-	const float NormalizedSpeed = FMath::Clamp(PlanarVelocity.Size() / MaxWalkSpeed, 0.0f, 1.0f);
+	const float NormalizedSpeed = FMath::Clamp(PlanarVelocity.Size() / NormalizationSpeed, 0.0f, 1.0f);
 
 	const FRotator ControlYawRotation(0.0f, DesiredView.Rotation.Yaw, 0.0f);
 	const FVector ForwardDirection = FRotationMatrix(ControlYawRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(ControlYawRotation).GetUnitAxis(EAxis::Y);
 
-	const float ForwardAlpha = FMath::Clamp(FVector::DotProduct(PlanarVelocity, ForwardDirection) / MaxWalkSpeed, -1.0f, 1.0f);
-	const float RightAlpha = FMath::Clamp(FVector::DotProduct(PlanarVelocity, RightDirection) / MaxWalkSpeed, -1.0f, 1.0f);
+	const float ForwardAlpha = FMath::Clamp(FVector::DotProduct(PlanarVelocity, ForwardDirection) / NormalizationSpeed, -1.0f, 1.0f);
+	const float RightAlpha = FMath::Clamp(FVector::DotProduct(PlanarVelocity, RightDirection) / NormalizationSpeed, -1.0f, 1.0f);
 
 	SmoothedForwardAlpha = FMath::FInterpTo(
 		SmoothedForwardAlpha,
@@ -130,7 +142,9 @@ void UNCRealityCameraComponent::GetCameraView(const float DeltaTime, FMinimalVie
 	NoiseTime += DeltaTime * RealityCameraTuning.IdleNoiseFrequency;
 	if (NormalizedSpeed > UE_SMALL_NUMBER)
 	{
-		WalkCycleTime += DeltaTime * RealityCameraTuning.WalkBobFrequency * FMath::Lerp(0.55f, 1.0f, SmoothedSpeedAlpha);
+		WalkCycleTime += DeltaTime
+			* ActiveBobFrequency
+			* FMath::Lerp(0.55f, 1.0f, SmoothedSpeedAlpha);
 	}
 
 	float TargetTurnYawOffset = 0.0f;
@@ -208,16 +222,19 @@ void UNCRealityCameraComponent::GetCameraView(const float DeltaTime, FMinimalVie
 	const float WalkLocationOffset = FMath::Sin(WalkPhase * 2.0f) *
 		RealityCameraTuning.WalkBobLocationAmplitude *
 		SmoothedSpeedAlpha *
-		EffectiveIntensity;
+		EffectiveIntensity *
+		SprintMotionScale;
 	const float WalkPitchOffset = FMath::Sin(WalkPhase * 2.0f) *
 		RealityCameraTuning.WalkBobRotationAmplitude *
 		SmoothedSpeedAlpha *
-		EffectiveIntensity;
+		EffectiveIntensity *
+		SprintMotionScale;
 	const float WalkYawOffset = FMath::Sin(WalkPhase) *
 		RealityCameraTuning.WalkBobRotationAmplitude *
 		SmoothedRightAlpha *
 		0.35f *
-		EffectiveIntensity;
+		EffectiveIntensity *
+		SprintMotionScale;
 
 	const float StrafeLocationOffset = -SmoothedRightAlpha *
 		RealityCameraTuning.StrafeSwayLocationAmplitude *
@@ -242,7 +259,9 @@ void UNCRealityCameraComponent::GetCameraView(const float DeltaTime, FMinimalVie
 	DesiredView.Location += DesiredView.Rotation.RotateVector(LocalLocationOffset + IdleLocationOffset);
 	DesiredView.Rotation += LocalRotationOffset;
 	DesiredView.Rotation.Normalize();
-	DesiredView.FOV = RealityCameraTuning.BaseFOV + (SmoothedSpeedAlpha * RealityCameraTuning.MoveFOVBoostMax * EffectiveIntensity);
+	DesiredView.FOV = RealityCameraTuning.BaseFOV
+		+ (SmoothedSpeedAlpha * RealityCameraTuning.MoveFOVBoostMax * EffectiveIntensity)
+		+ (SmoothedSpeedAlpha * SprintAlpha * RealityCameraTuning.SprintFOVBoostExtra * EffectiveIntensity);
 	DesiredView.PostProcessBlendWeight = RealityCameraTuning.bEnablePostProcess
 		? RealityCameraTuning.PostProcessBlendWeight * EffectiveIntensity
 		: 0.0f;

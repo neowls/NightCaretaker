@@ -1,17 +1,17 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "NCPlayerCharacter.h"
 
 #include "../Camera/NCRealityCameraComponent.h"
 #include "../Interaction/NCDoorActor.h"
 #include "../Interaction/NCPropInteractorComponent.h"
+#include "NCPlayerCharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/EngineTypes.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "InputAction.h"
 #include "InputActionValue.h"
@@ -19,7 +19,8 @@
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
-ANCPlayerCharacter::ANCPlayerCharacter()
+ANCPlayerCharacter::ANCPlayerCharacter(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer.SetDefaultSubobjectClass<UNCPlayerCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
     // Use the standard mannequin capsule so collision and interaction distances stay predictable.
     GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
@@ -31,17 +32,19 @@ ANCPlayerCharacter::ANCPlayerCharacter()
     bUseControllerRotationRoll = false;
 
     RunSpeed = 450.0f;
+    SprintSpeed = 650.0f;
     ActiveGrabbedDoor = nullptr;
 
-    UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+    UNCPlayerCharacterMovementComponent* CharacterMovementComponent = GetNCMovementComponent();
     check(CharacterMovementComponent != nullptr);
 
     CharacterMovementComponent->bOrientRotationToMovement = false;
     CharacterMovementComponent->JumpZVelocity = 0.0f;
     CharacterMovementComponent->AirControl = 0.0f;
-    CharacterMovementComponent->MaxWalkSpeed = RunSpeed;
     CharacterMovementComponent->BrakingDecelerationWalking = 2000.0f;
     CharacterMovementComponent->NavAgentProps.bCanJump = false;
+    CharacterMovementComponent->SetWalkSpeed(RunSpeed);
+    CharacterMovementComponent->SetSprintSpeed(SprintSpeed);
 
     JumpMaxCount = 0;
     JumpMaxHoldTime = 0.0f;
@@ -113,6 +116,13 @@ ANCPlayerCharacter::ANCPlayerCharacter()
     {
         GrabHoldInputAction = GrabHoldInputActionFinder.Object;
     }
+
+    ConstructorHelpers::FObjectFinder<UInputAction> SprintInputActionFinder(
+        TEXT("/Game/NightCaretaker/Input/Actions/IA_Sprint.IA_Sprint"));
+    if (SprintInputActionFinder.Succeeded())
+    {
+        SprintInputAction = SprintInputActionFinder.Object;
+    }
 }
 
 void ANCPlayerCharacter::Tick(const float DeltaSeconds)
@@ -124,6 +134,8 @@ void ANCPlayerCharacter::Tick(const float DeltaSeconds)
         ActiveGrabbedDoor = nullptr;
         RefreshPrecisionInteractionState();
     }
+
+    RefreshSprintBlockState();
 }
 
 void ANCPlayerCharacter::PostInitializeComponents()
@@ -131,6 +143,7 @@ void ANCPlayerCharacter::PostInitializeComponents()
     Super::PostInitializeComponents();
 
     RefreshRealityCameraSettings();
+    RefreshSprintBlockState();
 }
 
 void ANCPlayerCharacter::PawnClientRestart()
@@ -160,6 +173,13 @@ void ANCPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
     if (MouseLookInputAction != nullptr)
     {
         EnhancedInputComponent->BindAction(MouseLookInputAction, ETriggerEvent::Triggered, this, &ANCPlayerCharacter::Look);
+    }
+
+    if (SprintInputAction != nullptr)
+    {
+        EnhancedInputComponent->BindAction(SprintInputAction, ETriggerEvent::Started, this, &ANCPlayerCharacter::BeginSprint);
+        EnhancedInputComponent->BindAction(SprintInputAction, ETriggerEvent::Completed, this, &ANCPlayerCharacter::EndSprint);
+        EnhancedInputComponent->BindAction(SprintInputAction, ETriggerEvent::Canceled, this, &ANCPlayerCharacter::EndSprint);
     }
 
     if (GrabHoldInputAction != nullptr)
@@ -203,6 +223,22 @@ void ANCPlayerCharacter::Look(const FInputActionValue& Value)
     AddControllerPitchInput(LookAxis.Y);
 }
 
+void ANCPlayerCharacter::BeginSprint()
+{
+    if (UNCPlayerCharacterMovementComponent* CharacterMovementComponent = GetNCMovementComponent())
+    {
+        CharacterMovementComponent->SetSprintInputHeld(true);
+    }
+}
+
+void ANCPlayerCharacter::EndSprint()
+{
+    if (UNCPlayerCharacterMovementComponent* CharacterMovementComponent = GetNCMovementComponent())
+    {
+        CharacterMovementComponent->SetSprintInputHeld(false);
+    }
+}
+
 void ANCPlayerCharacter::BeginGrabHold()
 {
     if (ActiveGrabbedDoor != nullptr && ActiveGrabbedDoor->IsDoorGrabActive())
@@ -221,14 +257,16 @@ void ANCPlayerCharacter::BeginGrabHold()
             {
                 RealityCameraComponent->SetPrecisionInteractionEnabled(true);
             }
+
+            RefreshSprintBlockState();
         }
 
         return;
     }
 
-    if (PropInteractorComponent != nullptr)
+    if (PropInteractorComponent != nullptr && PropInteractorComponent->TryBeginGrab())
     {
-        PropInteractorComponent->TryBeginGrab();
+        RefreshSprintBlockState();
     }
 }
 
@@ -243,6 +281,7 @@ void ANCPlayerCharacter::EndGrabHold()
 
         ActiveGrabbedDoor = nullptr;
         RefreshPrecisionInteractionState();
+        RefreshSprintBlockState();
         return;
     }
 
@@ -252,17 +291,39 @@ void ANCPlayerCharacter::EndGrabHold()
     }
 
     RefreshPrecisionInteractionState();
+    RefreshSprintBlockState();
 }
 
 void ANCPlayerCharacter::RefreshRealityCameraSettings()
 {
-    UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+    UNCPlayerCharacterMovementComponent* CharacterMovementComponent = GetNCMovementComponent();
     check(CharacterMovementComponent != nullptr);
     check(RealityCameraComponent != nullptr);
 
-    CharacterMovementComponent->MaxWalkSpeed = RunSpeed;
+    CharacterMovementComponent->SetWalkSpeed(RunSpeed);
+    CharacterMovementComponent->SetSprintSpeed(SprintSpeed);
     RealityCameraComponent->ApplyRuntimeTuning();
     BaseEyeHeight = RealityCameraComponent->RealityCameraTuning.BaseOffset.Z;
+}
+
+void ANCPlayerCharacter::RefreshSprintBlockState()
+{
+    UNCPlayerCharacterMovementComponent* CharacterMovementComponent = GetNCMovementComponent();
+    if (CharacterMovementComponent == nullptr)
+    {
+        return;
+    }
+
+    const bool bInteractionBlockingSprint = ActiveGrabbedDoor != nullptr
+        || (PropInteractorComponent != nullptr && PropInteractorComponent->IsHoldingProp());
+
+    if (bInteractionBlockingSprint)
+    {
+        CharacterMovementComponent->AddSprintBlock(ENCSprintBlockReason::Interaction);
+        return;
+    }
+
+    CharacterMovementComponent->RemoveSprintBlock(ENCSprintBlockReason::Interaction);
 }
 
 void ANCPlayerCharacter::ApplyInputMappingContexts() const
@@ -339,3 +400,7 @@ void ANCPlayerCharacter::RefreshPrecisionInteractionState()
     RealityCameraComponent->SetPrecisionInteractionEnabled(bPrecisionInteractionActive);
 }
 
+UNCPlayerCharacterMovementComponent* ANCPlayerCharacter::GetNCMovementComponent() const
+{
+    return Cast<UNCPlayerCharacterMovementComponent>(GetCharacterMovement());
+}

@@ -149,9 +149,14 @@ const FText SectionTitle = LOCTEXT("RealityCamSectionTitle", "Reality Camera");
 권장 예시:
 
 ```cpp
+Category = "RealityCam|Base"
 Category = "RealityCam|Idle"
 Category = "RealityCam|Locomotion"
+Category = "RealityCam|Sprint"
 Category = "RealityCam|Rotation"
+Category = "RealityCam|Impulse"
+Category = "RealityCam|Interaction"
+Category = "RealityCam|Post Process"
 ```
 
 이유:

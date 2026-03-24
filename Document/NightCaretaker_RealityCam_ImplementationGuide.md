@@ -1,4 +1,4 @@
-# RealityCam 구현 해설서
+﻿# RealityCam 구현 해설서
 
 ## 문서 목적
 
@@ -48,13 +48,14 @@
 이 구조체는 "디자이너가 만질 수 있는 설정값 묶음"이다.
 실행 중 변화하는 값이 아니라, 카메라 성격을 정의하는 값이다.
 
-구성은 크게 여섯 영역이다.
+구성은 크게 여덟 영역이다.
 
-- 기본값
+- Base
   - `RealityCamIntensity`: 전체 RealityCam 효과 강도
   - `BaseOffset`: 캡슐 기준 카메라 기본 위치
   - `BaseFOV`: 정지 상태 기본 FOV
   - `MoveFOVBoostMax`: 최대 이동 시 추가 FOV
+  - `MovementResponseSpeed`: 이동 기반 카메라 응답 보간 속도
 - Idle
   - `IdleNoiseLocationAmplitude`
   - `IdleNoiseRotationAmplitude`
@@ -62,10 +63,15 @@
 - Locomotion
   - `WalkBobLocationAmplitude`
   - `WalkBobRotationAmplitude`
-  - `WalkBobFrequency`
+  - `BaseBobFrequency`
+  - `WalkBobFrequencyOverride`
   - `StrafeSwayLocationAmplitude`
   - `StrafeSwayYawAmplitude`
   - `MaxRollDegrees`
+- Sprint
+  - `SprintBobFrequencyOverride`
+  - `SprintBobScale`
+  - `SprintFOVBoostExtra`
 - Rotation
   - `TurnYawLagDegrees`
   - `TurnPitchLagDegrees`
@@ -75,14 +81,14 @@
   - `StartStopPitchAmplitude`
   - `StartStopResponseSpeed`
   - `StartStopRecoverySpeed`
-- Interaction/Post Process
+- Interaction
   - `InteractionDampingFactor`
   - `PrecisionModeInterpSpeed`
+- Post Process
   - `bEnablePostProcess`
   - `PostProcessBlendWeight`
   - `ChromaticAberrationIntensity`
   - `VignetteIntensity`
-
 핵심 포인트는 "하나의 큰 수식"이 아니라, 목적이 다른 작은 레이어들의 강도를 각각 조절할 수 있게 나눠둔 점이다.
 
 ### 3.2 `UNCRealityCameraComponent`의 런타임 상태값
@@ -239,10 +245,10 @@ DesiredView.FOV = BaseFOV + SpeedAlpha * MoveFOVBoostMax * Intensity;
 
 ## 10. 현재 구조의 한계
 
-- `Sprint`, `Crouch`, `Landing`, `Breathing` 전용 레이어가 아직 없다.
+- `Sprint` 전용 bob/FOV 확장은 구현되었지만, `Crouch`, `Landing`, `Breathing` 전용 레이어는 아직 없다.
 - 착지 충격은 아직 구현되지 않았다.
 - 시작/정지 impulse는 실제 가속도가 아니라 속도 변화량 기반 근사다.
-- 상호작용 감쇠는 API만 있고 아직 상호작용 시스템과 연결되지 않았다.
+- 상호작용 감쇠는 현재 `Grab` 기반 문/프랍 상호작용에 연결되어 있으며, 향후 `Use`, `Inspect`, `Read`까지 확장 여지가 있다.
 - 카메라 모드가 많아지면 나중에 `PlayerCameraManager` 계층으로 옮길 가능성이 있다.
 
 ## 11. 의사코드
@@ -279,7 +285,7 @@ function GetCameraView(deltaTime):
 
     noiseTime += deltaTime * IdleNoiseFrequency
     if normalizedSpeed > 0:
-        walkCycleTime += deltaTime * WalkBobFrequency * speedScale
+        walkCycleTime += deltaTime * activeBobFrequency * speedScale
 
     yawRate = deltaAngle(lastYaw, currentYaw) / deltaTime
     pitchRate = deltaAngle(lastPitch, currentPitch) / deltaTime
@@ -325,9 +331,14 @@ function GetCameraView(deltaTime):
 ## 12. 확장 우선순위
 
 추천 순서:
-1. 상호작용 시스템과 `SetPrecisionInteractionEnabled()` 연결
-2. `Sprint` 전용 bob/FOV 확장
-3. `Landing` 충격 레이어 추가
-4. `Breathing` 또는 긴장도 기반 미세 흔들림 연동
-5. `Crouch` 높이 전환과 카메라 오프셋 보간
-6. 손전등 흔들림을 RealityCam 계산값과 연동
+1. 상호작용 시스템과 SetPrecisionInteractionEnabled()를 Use/Inspect/Read까지 확장
+2. Landing 충격 레이어 추가
+3. Breathing 또는 긴장도 기반 미세 흔들림 연동
+4. Crouch 높이 전환과 카메라 오프셋 보간
+5. 손전등 흔들림을 RealityCam 계산값과 연동
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -17,5 +17,5 @@ class NIGHTCARETAKER_API ANCCharacterBase : public ACharacter
 
 public:
 	/** Creates a lightweight character base with no per-frame work by default. */
-	ANCCharacterBase();
+	ANCCharacterBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 };
