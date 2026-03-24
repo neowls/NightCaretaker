@@ -8,10 +8,13 @@
 
 /**
  * Shared parent for project player controller variants.
- * Keep cross-mode input or UI hooks here when they must be inherited everywhere.
+ * Keep cross-mode input, UI hooks, and reusable debug affordances here when they must be inherited everywhere.
  */
 UCLASS(Abstract)
 class NIGHTCARETAKER_API ANCPlayerControllerBase : public APlayerController
 {
 	GENERATED_BODY()
+
+public:
+	ANCPlayerControllerBase();
 };
