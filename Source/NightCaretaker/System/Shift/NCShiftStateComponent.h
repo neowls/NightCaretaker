@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "GameplayTagContainer.h"
+#include "../../Widget/NCWidgetSource.h"
 #include "NCShiftTypes.h"
 #include "NCShiftStateComponent.generated.h"
 
@@ -13,7 +14,7 @@
  * Keeps chapter, phase, focused complaint, and progression tags in one reusable component.
  */
 UCLASS(ClassGroup = (NightCaretaker), BlueprintType, meta = (BlueprintSpawnableComponent))
-class NIGHTCARETAKER_API UNCShiftStateComponent : public UActorComponent
+class NIGHTCARETAKER_API UNCShiftStateComponent : public UActorComponent, public INCWidgetSource
 {
     GENERATED_BODY()
 
@@ -50,7 +51,12 @@ public:
     UFUNCTION(BlueprintPure, Category = "Shift")
     bool HasProgressionTag(FGameplayTag ProgressionTag) const;
 
+    virtual void RegisterWidgetListener_Implementation(UObject* Listener) override;
+    virtual void UnregisterWidgetListener_Implementation(UObject* Listener) override;
+
 private:
+    void NotifyWidgetListeners();
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Shift", meta = (AllowPrivateAccess = "true", DisplayName = "Current Chapter Id", ToolTip = "Stable chapter identifier for the current shift."))
     FName CurrentChapterId = NAME_None;
 
@@ -62,4 +68,8 @@ private:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Shift", meta = (AllowPrivateAccess = "true", DisplayName = "Active Progression Tags", ToolTip = "Progression tags currently active in the shift.", Categories = "Progression"))
     FGameplayTagContainer ActiveProgressionTags;
+
+    UPROPERTY(Transient)
+    TArray<TWeakObjectPtr<UObject>> WidgetListeners;
 };
+
