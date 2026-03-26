@@ -1,10 +1,12 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "NCPlayerCharacter.h"
 
 #include "../Camera/NCRealityCameraComponent.h"
 #include "../Interaction/NCDoorActor.h"
 #include "../Interaction/NCPropInteractorComponent.h"
+#include "../System/NCPlayerControllerBase.h"
+#include "../Widget/NCPlayerHUDWidgetSource.h"
 #include "NCPlayerCharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -33,6 +35,8 @@ ANCPlayerCharacter::ANCPlayerCharacter(const FObjectInitializer& ObjectInitializ
 
     RunSpeed = 450.0f;
     SprintSpeed = 650.0f;
+    IdleReticleOpacity = 0.35f;
+    FocusedReticleOpacity = 1.0f;
     ActiveGrabbedDoor = nullptr;
 
     UNCPlayerCharacterMovementComponent* CharacterMovementComponent = GetNCMovementComponent();
@@ -136,6 +140,7 @@ void ANCPlayerCharacter::Tick(const float DeltaSeconds)
     }
 
     RefreshSprintBlockState();
+    RefreshHUDTargetingState();
 }
 
 void ANCPlayerCharacter::PostInitializeComponents()
@@ -259,6 +264,7 @@ void ANCPlayerCharacter::BeginGrabHold()
             }
 
             RefreshSprintBlockState();
+            RefreshHUDTargetingState();
         }
 
         return;
@@ -267,6 +273,7 @@ void ANCPlayerCharacter::BeginGrabHold()
     if (PropInteractorComponent != nullptr && PropInteractorComponent->TryBeginGrab())
     {
         RefreshSprintBlockState();
+        RefreshHUDTargetingState();
     }
 }
 
@@ -282,6 +289,7 @@ void ANCPlayerCharacter::EndGrabHold()
         ActiveGrabbedDoor = nullptr;
         RefreshPrecisionInteractionState();
         RefreshSprintBlockState();
+        RefreshHUDTargetingState();
         return;
     }
 
@@ -292,6 +300,7 @@ void ANCPlayerCharacter::EndGrabHold()
 
     RefreshPrecisionInteractionState();
     RefreshSprintBlockState();
+    RefreshHUDTargetingState();
 }
 
 void ANCPlayerCharacter::RefreshRealityCameraSettings()
@@ -324,6 +333,42 @@ void ANCPlayerCharacter::RefreshSprintBlockState()
     }
 
     CharacterMovementComponent->RemoveSprintBlock(ENCSprintBlockReason::Interaction);
+}
+
+void ANCPlayerCharacter::RefreshHUDTargetingState()
+{
+    UNCPlayerHUDWidgetSource* HUDSource = GetPlayerHUDWidgetSource();
+    if (HUDSource == nullptr)
+    {
+        return;
+    }
+
+    bool bHasReticleFocus = false;
+
+    if (ActiveGrabbedDoor != nullptr && ActiveGrabbedDoor->IsDoorGrabActive())
+    {
+        bHasReticleFocus = true;
+    }
+    else if (PropInteractorComponent != nullptr && PropInteractorComponent->IsHoldingProp())
+    {
+        bHasReticleFocus = true;
+    }
+    else
+    {
+        FHitResult DoorHit;
+        if (ANCDoorActor* TargetDoor = TraceDoorTarget(DoorHit))
+        {
+            bHasReticleFocus = TargetDoor->IsDoorLocked() == false;
+        }
+
+        if (bHasReticleFocus == false && PropInteractorComponent != nullptr)
+        {
+            bHasReticleFocus = PropInteractorComponent->HasPreviewGrabTarget();
+        }
+    }
+
+    const float TargetReticleOpacity = bHasReticleFocus ? FocusedReticleOpacity : IdleReticleOpacity;
+    HUDSource->SetTargetingState(bHasReticleFocus, false, FText::GetEmpty(), TargetReticleOpacity);
 }
 
 void ANCPlayerCharacter::ApplyInputMappingContexts() const
@@ -398,6 +443,17 @@ void ANCPlayerCharacter::RefreshPrecisionInteractionState()
     const bool bPrecisionInteractionActive = ActiveGrabbedDoor != nullptr
         || (PropInteractorComponent != nullptr && PropInteractorComponent->IsHoldingProp());
     RealityCameraComponent->SetPrecisionInteractionEnabled(bPrecisionInteractionActive);
+}
+
+UNCPlayerHUDWidgetSource* ANCPlayerCharacter::GetPlayerHUDWidgetSource()
+{
+    ANCPlayerControllerBase* NCPlayerController = Cast<ANCPlayerControllerBase>(Controller);
+    if (NCPlayerController == nullptr || NCPlayerController->IsLocalController() == false)
+    {
+        return nullptr;
+    }
+
+    return NCPlayerController->GetOrCreatePlayerHUDWidgetSource();
 }
 
 UNCPlayerCharacterMovementComponent* ANCPlayerCharacter::GetNCMovementComponent() const

@@ -19,6 +19,9 @@ public:
     UNCPlayerHUDWidgetSource();
 
     UFUNCTION(BlueprintCallable, Category = "HUD")
+    void SetTargetingState(bool bInHasReticleFocus, bool bInCanInteract, const FText& InInteractionPrompt, float InReticleOpacity, bool bInShowReticle = true);
+
+    UFUNCTION(BlueprintCallable, Category = "HUD")
     void SetReticleState(bool bInShowReticle, float InReticleOpacity = 1.0f);
 
     UFUNCTION(BlueprintCallable, Category = "HUD")
@@ -44,6 +47,9 @@ public:
 
     UPROPERTY(BlueprintReadOnly, Category = "HUD")
     float ReticleOpacity = 0.35f;
+
+    UPROPERTY(BlueprintReadOnly, Category = "HUD")
+    bool bHasReticleFocus = false;
 
     UPROPERTY(BlueprintReadOnly, Category = "HUD")
     bool bCanInteract = false;

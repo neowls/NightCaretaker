@@ -32,6 +32,14 @@ UNCPropInteractorComponent::UNCPropInteractorComponent()
     HeldCameraRelativeRotation = FQuat::Identity;
 }
 
+bool UNCPropInteractorComponent::HasPreviewGrabTarget() const
+{
+    FHitResult Hit;
+    UNCPhysicsCarryTargetComponent* CarryTarget = nullptr;
+    UPrimitiveComponent* PrimitiveComponent = nullptr;
+    return TryResolveGrabTarget(Hit, CarryTarget, PrimitiveComponent);
+}
+
 bool UNCPropInteractorComponent::TryBeginGrab()
 {
     if (IsHoldingProp())
@@ -479,4 +487,3 @@ void UNCPropInteractorComponent::UpdateHeldTarget()
 
     PhysicsHandle->SetTargetLocationAndRotation(TargetLocation, GetHoldTargetRotation(*ViewCamera));
 }
-

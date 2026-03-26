@@ -30,6 +30,9 @@ protected:
     float ReticleOpacity = 0.35f;
 
     UPROPERTY(Transient, BlueprintReadOnly, Category = "HUD")
+    bool bHasReticleFocus = false;
+
+    UPROPERTY(Transient, BlueprintReadOnly, Category = "HUD")
     bool bCanInteract = false;
 
     UPROPERTY(Transient, BlueprintReadOnly, Category = "HUD")

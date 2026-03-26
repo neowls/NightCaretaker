@@ -21,6 +21,7 @@ void UNCPlayerHUDWidget::RefreshView_Implementation()
     {
         bShowReticle = HUDSource->bShowReticle;
         ReticleOpacity = HUDSource->ReticleOpacity;
+        bHasReticleFocus = HUDSource->bHasReticleFocus;
         bCanInteract = HUDSource->bCanInteract;
         InteractionPromptText = HUDSource->InteractionPromptText;
         ToolLabelText = HUDSource->ToolLabelText;
@@ -29,5 +30,3 @@ void UNCPlayerHUDWidget::RefreshView_Implementation()
         SubtitleLineText = HUDSource->SubtitleLineText;
     }
 }
-
-
