@@ -61,6 +61,20 @@
 - Prefer actionable diffs/snippets over long theory.
 - Suggest minimal next steps only when useful.
 
+# Documentation Workflow
+- For any non-trivial feature request, system design task, or structural implementation work, use `Document/Source` as the primary documentation workspace.
+- Create and maintain exactly two task-level documents unless the user asks for a different structure:
+  - `<WorkItem>_Overview.md`: high-level summary of goal, scope, current status, completed work, remaining work, blockers, risks, validation state, and latest update log.
+  - `<WorkItem>_Detail.md`: deep implementation document covering design intent, rationale, file/class ownership, data flow, function/variable/event usage, Blueprint/C++ connections, dependencies, and important edge cases.
+- Create the two documents as early as possible once the work item is clear. If matching documents already exist, update them instead of creating duplicates.
+- Update both documents periodically during implementation, not only at the end. At minimum, update them when:
+  - the initial implementation plan is formed,
+  - a meaningful milestone is completed,
+  - scope/approach changes,
+  - work is handed off or finished.
+- Keep the overview document short and operational. Keep the detail document exhaustive enough that another engineer can understand what was implemented, why it was implemented that way, and how the involved code paths connect.
+- When useful, include repo-relative file paths, class names, function names, gameplay tags, assets, widgets, subsystems, events, and validation notes so the documentation can be used as a working implementation reference.
+
 # Search Tooling (Codex + PowerShell)
 - Prefer `rg` for text/file search, but use PowerShell-safe quoting for args:
   - `rg --line-number --glob '*.h' 'Pattern' .`
@@ -73,6 +87,4 @@
   - `rg ...; if ($LASTEXITCODE -eq 1) { exit 0 } elseif ($LASTEXITCODE -ge 2) { exit $LASTEXITCODE }`
 - Fall back to PowerShell search only when `rg` is unavailable or exit code is `>=2`.
 - Scope large searches to target roots (for example `Source`, specific plugin folders) to avoid expensive repository-wide scans.
-
-
 

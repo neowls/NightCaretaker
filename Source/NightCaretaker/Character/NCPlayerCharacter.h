@@ -7,7 +7,6 @@
 
 class ANCDoorActor;
 class UNCPlayerCharacterMovementComponent;
-class UNCPlayerHUDWidgetSource;
 class UNCPropInteractorComponent;
 class UNCRealityCameraComponent;
 class UInputAction;
@@ -85,17 +84,11 @@ protected:
     /** Synchronizes sprint blocking with the current interaction state. */
     void RefreshSprintBlockState();
 
-    /** Pushes the current camera-center targeting state into the runtime HUD source. */
-    void RefreshHUDTargetingState();
-
     /** Traces the RealityCam view and returns the first directly targeted door actor, if any. */
     ANCDoorActor* TraceDoorTarget(FHitResult& OutHit) const;
 
     /** Restores the RealityCam precision damping state after grab interactions end. */
     void RefreshPrecisionInteractionState();
-
-    /** Returns the local player's runtime HUD source, if one is available. */
-    UNCPlayerHUDWidgetSource* GetPlayerHUDWidgetSource();
 
     /** Returns the typed player movement component used by this pawn. */
     UNCPlayerCharacterMovementComponent* GetNCMovementComponent() const;
@@ -148,14 +141,6 @@ protected:
     /** Faster locomotion speed used while sprint input is held and allowed. */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (DisplayName = "Sprint Speed", ToolTip = "Faster locomotion speed used while sprint input is held and the current state allows it.", ClampMin = "0.0"))
     float SprintSpeed;
-
-    /** Default reticle opacity used while no actionable target is centered. */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD", meta = (DisplayName = "Idle Reticle Opacity", ToolTip = "Default reticle opacity used while no actionable target is centered.", ClampMin = "0.0", ClampMax = "1.0"))
-    float IdleReticleOpacity;
-
-    /** Higher reticle opacity used while a grabbable or interactable target is focused. */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD", meta = (DisplayName = "Focused Reticle Opacity", ToolTip = "Higher reticle opacity used while a grabbable or interactable target is focused.", ClampMin = "0.0", ClampMax = "1.0"))
-    float FocusedReticleOpacity;
 
 private:
     /** Door currently being direct-grab dragged by the shared Physics Handle. */

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
-#include "../../Widget/NCWidgetSource.h"
 #include "../Achievement/NCAchievementDataTypes.h"
 #include "../Shift/NCShiftTypes.h"
 #include "NCComplaintDataTypes.h"
@@ -18,10 +17,10 @@ enum class ENCAnomalyAchievementTrigger : uint8;
 
 /**
  * World-facing coordinator for complaint loop state.
- * Keeps GameMode, GameState, UI, and debug tools from reaching into components directly.
+ * Keeps GameMode, GameState, runtime systems, and debug tools from reaching into components directly.
  */
 UCLASS()
-class NIGHTCARETAKER_API UNCComplaintRuntimeSubsystem : public UWorldSubsystem, public INCWidgetSource
+class NIGHTCARETAKER_API UNCComplaintRuntimeSubsystem : public UWorldSubsystem
 {
     GENERATED_BODY()
 
@@ -61,14 +60,4 @@ public:
 
     FNCAchievementWriteResult SubmitComplaintAchievementEvent(FName ComplaintId, const FNCComplaintAchievementEvent& AchievementEvent, ENCComplaintAchievementTrigger Trigger);
     FNCAchievementWriteResult SubmitAnomalyAchievementEvent(FName ComplaintId, const FNCAnomalyAchievementEvent& AchievementEvent, ENCAnomalyAchievementTrigger Trigger);
-
-    virtual void RegisterWidgetListener_Implementation(UObject* Listener) override;
-    virtual void UnregisterWidgetListener_Implementation(UObject* Listener) override;
-
-private:
-    void NotifyWidgetListeners();
-
-    UPROPERTY(Transient)
-    TArray<TWeakObjectPtr<UObject>> WidgetListeners;
 };
-
