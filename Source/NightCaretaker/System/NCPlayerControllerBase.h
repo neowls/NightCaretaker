@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,9 +6,11 @@
 #include "GameFramework/PlayerController.h"
 #include "NCPlayerControllerBase.generated.h"
 
+class UNCPlayerHUDWidget;
+
 /**
  * Shared parent for project player controller variants.
- * Keep cross-mode input hooks and reusable debug affordances here when they must be inherited everywhere.
+ * Keep cross-mode input hooks, runtime HUD setup, and reusable debug affordances here when they must be inherited everywhere.
  */
 UCLASS(Abstract)
 class NIGHTCARETAKER_API ANCPlayerControllerBase : public APlayerController
@@ -17,4 +19,12 @@ class NIGHTCARETAKER_API ANCPlayerControllerBase : public APlayerController
 
 public:
     ANCPlayerControllerBase();
+
+protected:
+    virtual void BeginPlay() override;
+
+    void ShowRuntimeHUD();
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+    TSubclassOf<UNCPlayerHUDWidget> PlayerHUDWidgetClass;
 };

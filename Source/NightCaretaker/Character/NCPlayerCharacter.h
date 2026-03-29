@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -80,6 +80,9 @@ protected:
 
     /** Synchronizes editable movement and RealityCam settings with runtime components. */
     void RefreshRealityCameraSettings();
+
+    /** Pushes current reticle visibility and focus state into the local-player UI subsystem. */
+    void RefreshHUDState();
 
     /** Synchronizes sprint blocking with the current interaction state. */
     void RefreshSprintBlockState();
