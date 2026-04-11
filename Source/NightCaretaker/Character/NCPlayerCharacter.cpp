@@ -12,12 +12,14 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/EngineTypes.h"
+#include "Engine/LocalPlayer.h"
 #include "GameFramework/PlayerController.h"
 #include "InputAction.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "../Widget/NCUISubsystem.h"
 
 ANCPlayerCharacter::ANCPlayerCharacter(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<UNCPlayerCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -136,6 +138,7 @@ void ANCPlayerCharacter::Tick(const float DeltaSeconds)
     }
 
     RefreshSprintBlockState();
+    RefreshHUDState();
 }
 
 void ANCPlayerCharacter::PostInitializeComponents()
@@ -144,6 +147,7 @@ void ANCPlayerCharacter::PostInitializeComponents()
 
     RefreshRealityCameraSettings();
     RefreshSprintBlockState();
+    RefreshHUDState();
 }
 
 void ANCPlayerCharacter::PawnClientRestart()
@@ -151,6 +155,7 @@ void ANCPlayerCharacter::PawnClientRestart()
     Super::PawnClientRestart();
 
     ApplyInputMappingContexts();
+    RefreshHUDState();
 }
 
 void ANCPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -259,6 +264,7 @@ void ANCPlayerCharacter::BeginGrabHold()
             }
 
             RefreshSprintBlockState();
+            RefreshHUDState();
         }
 
         return;
@@ -267,6 +273,7 @@ void ANCPlayerCharacter::BeginGrabHold()
     if (PropInteractorComponent != nullptr && PropInteractorComponent->TryBeginGrab())
     {
         RefreshSprintBlockState();
+        RefreshHUDState();
     }
 }
 
@@ -282,6 +289,7 @@ void ANCPlayerCharacter::EndGrabHold()
         ActiveGrabbedDoor = nullptr;
         RefreshPrecisionInteractionState();
         RefreshSprintBlockState();
+        RefreshHUDState();
         return;
     }
 
@@ -292,6 +300,7 @@ void ANCPlayerCharacter::EndGrabHold()
 
     RefreshPrecisionInteractionState();
     RefreshSprintBlockState();
+    RefreshHUDState();
 }
 
 void ANCPlayerCharacter::RefreshRealityCameraSettings()
@@ -304,6 +313,40 @@ void ANCPlayerCharacter::RefreshRealityCameraSettings()
     CharacterMovementComponent->SetSprintSpeed(SprintSpeed);
     RealityCameraComponent->ApplyRuntimeTuning();
     BaseEyeHeight = RealityCameraComponent->RealityCameraTuning.BaseOffset.Z;
+}
+
+void ANCPlayerCharacter::RefreshHUDState()
+{
+    const APlayerController* PlayerController = Cast<APlayerController>(Controller);
+    if (PlayerController == nullptr || PlayerController->IsLocalController() == false)
+    {
+        return;
+    }
+
+    const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
+    if (LocalPlayer == nullptr)
+    {
+        return;
+    }
+
+    UNCUISubsystem* UISubsystem = LocalPlayer->GetSubsystem<UNCUISubsystem>();
+    if (UISubsystem == nullptr)
+    {
+        return;
+    }
+
+    FHitResult DoorHit;
+    const bool bHasDoorTarget = TraceDoorTarget(DoorHit) != nullptr;
+    const bool bHasPropTarget = PropInteractorComponent != nullptr && PropInteractorComponent->HasPreviewGrabTarget();
+    const bool bHasReticleFocus = bHasDoorTarget
+        || bHasPropTarget
+        || ActiveGrabbedDoor != nullptr
+        || (PropInteractorComponent != nullptr && PropInteractorComponent->IsHoldingProp());
+
+    FNCHUDState HUDState = UISubsystem->GetHUDState();
+    HUDState.bShowReticle = true;
+    HUDState.bHasReticleFocus = bHasReticleFocus;
+    UISubsystem->SetHUDState(HUDState);
 }
 
 void ANCPlayerCharacter::RefreshSprintBlockState()
@@ -404,3 +447,4 @@ UNCPlayerCharacterMovementComponent* ANCPlayerCharacter::GetNCMovementComponent(
 {
     return Cast<UNCPlayerCharacterMovementComponent>(GetCharacterMovement());
 }
+

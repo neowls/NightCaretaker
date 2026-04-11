@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -87,6 +87,10 @@ class NIGHTCARETAKER_API UNCPropInteractorComponent : public UActorComponent
 public:
     /** Creates the prop interactor component with ticking enabled. */
     UNCPropInteractorComponent();
+
+    /** Returns whether the current camera view is pointing at a valid grab target. */
+    UFUNCTION(BlueprintPure, Category = "Physics Carry", meta = (DisplayName = "Has Preview Grab Target", ToolTip = "Returns whether the current camera view is pointing at a valid grab target."))
+    bool HasPreviewGrabTarget() const;
 
     /** Attempts to grab a valid physics carry target under the camera reticle. */
     UFUNCTION(BlueprintCallable, Category = "Physics Carry", meta = (DisplayName = "Try Begin Grab", ToolTip = "Attempts to grab a valid physics carry target under the camera reticle."))

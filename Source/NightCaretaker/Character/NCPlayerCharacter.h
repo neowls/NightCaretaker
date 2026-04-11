@@ -81,6 +81,9 @@ protected:
     /** Synchronizes editable movement and RealityCam settings with runtime components. */
     void RefreshRealityCameraSettings();
 
+    /** Pushes current reticle visibility and focus state into the local-player UI subsystem. */
+    void RefreshHUDState();
+
     /** Synchronizes sprint blocking with the current interaction state. */
     void RefreshSprintBlockState();
 
@@ -139,7 +142,7 @@ protected:
     float RunSpeed;
 
     /** Faster locomotion speed used while sprint input is held and allowed. */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (DisplayName = "Sprint Speed", ToolTip = "Faster locomotion speed used while sprint input is held and the current state allows sprinting.", ClampMin = "0.0"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (DisplayName = "Sprint Speed", ToolTip = "Faster locomotion speed used while sprint input is held and the current state allows it.", ClampMin = "0.0"))
     float SprintSpeed;
 
 private:

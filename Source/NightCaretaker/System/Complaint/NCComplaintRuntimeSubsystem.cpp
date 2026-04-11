@@ -9,7 +9,6 @@
 #include "NCComplaintRuntimeComponent.h"
 #include "Engine/GameInstance.h"
 #include "Engine/World.h"
-#include "../../Widget/NCUserWidget.h"
 
 ANCGameStateBase* UNCComplaintRuntimeSubsystem::GetNCGameState() const
 {
@@ -41,7 +40,6 @@ bool UNCComplaintRuntimeSubsystem::SetCurrentChapter(const FName ChapterId)
     if (UNCShiftStateComponent* ShiftState = GetShiftStateComponent())
     {
         ShiftState->SetCurrentChapterId(ChapterId);
-        NotifyWidgetListeners();
         return true;
     }
 
@@ -53,7 +51,6 @@ bool UNCComplaintRuntimeSubsystem::SetShiftPhase(const ENCShiftPhase ShiftPhase)
     if (UNCShiftStateComponent* ShiftState = GetShiftStateComponent())
     {
         ShiftState->SetShiftPhase(ShiftPhase);
-        NotifyWidgetListeners();
         return true;
     }
 
@@ -64,12 +61,7 @@ bool UNCComplaintRuntimeSubsystem::RegisterComplaint(const FName ComplaintId)
 {
     if (UNCComplaintRuntimeComponent* ComplaintRuntime = GetComplaintRuntimeComponent())
     {
-        const bool bResult = ComplaintRuntime->EnsureComplaintRuntimeData(ComplaintId);
-        if (bResult)
-        {
-            NotifyWidgetListeners();
-        }
-        return bResult;
+        return ComplaintRuntime->EnsureComplaintRuntimeData(ComplaintId);
     }
 
     return false;
@@ -90,7 +82,6 @@ bool UNCComplaintRuntimeSubsystem::AcceptComplaint(const FName ComplaintId)
             ShiftState->SetShiftPhase(ENCShiftPhase::Investigating);
         }
 
-        NotifyWidgetListeners();
         return true;
     }
 
@@ -112,7 +103,6 @@ bool UNCComplaintRuntimeSubsystem::BeginInvestigation(const FName ComplaintId)
             ShiftState->SetShiftPhase(ENCShiftPhase::Investigating);
         }
 
-        NotifyWidgetListeners();
         return true;
     }
 
@@ -136,7 +126,6 @@ bool UNCComplaintRuntimeSubsystem::SubmitReport(const FName ComplaintId, const E
             ShiftState->SetShiftPhase(ENCShiftPhase::Reporting);
         }
 
-        NotifyWidgetListeners();
         return true;
     }
 
@@ -162,7 +151,6 @@ bool UNCComplaintRuntimeSubsystem::CloseComplaint(const FName ComplaintId)
             ShiftState->SetShiftPhase(ENCShiftPhase::BoardReview);
         }
 
-        NotifyWidgetListeners();
         return true;
     }
 
@@ -173,12 +161,7 @@ bool UNCComplaintRuntimeSubsystem::AddEvidenceTag(const FName ComplaintId, const
 {
     if (UNCComplaintRuntimeComponent* ComplaintRuntime = GetComplaintRuntimeComponent())
     {
-        const bool bResult = ComplaintRuntime->AddDiscoveredEvidenceTag(ComplaintId, EvidenceTag);
-        if (bResult)
-        {
-            NotifyWidgetListeners();
-        }
-        return bResult;
+        return ComplaintRuntime->AddDiscoveredEvidenceTag(ComplaintId, EvidenceTag);
     }
 
     return false;
@@ -252,53 +235,3 @@ FNCAchievementWriteResult UNCComplaintRuntimeSubsystem::SubmitAnomalyAchievement
     Result.Message = TEXT("Achievement subsystem was unavailable.");
     return Result;
 }
-
-void UNCComplaintRuntimeSubsystem::RegisterWidgetListener_Implementation(UObject* Listener)
-{
-    if (Listener == nullptr)
-    {
-        return;
-    }
-
-    for (const TWeakObjectPtr<UObject>& ExistingListener : WidgetListeners)
-    {
-        if (ExistingListener.Get() == Listener)
-        {
-            return;
-        }
-    }
-
-    WidgetListeners.Add(Listener);
-}
-
-void UNCComplaintRuntimeSubsystem::UnregisterWidgetListener_Implementation(UObject* Listener)
-{
-    if (Listener == nullptr)
-    {
-        return;
-    }
-
-    WidgetListeners.RemoveAll(
-        [Listener](const TWeakObjectPtr<UObject>& ExistingListener)
-        {
-            return ExistingListener.IsValid() == false || ExistingListener.Get() == Listener;
-        });
-}
-
-void UNCComplaintRuntimeSubsystem::NotifyWidgetListeners()
-{
-    WidgetListeners.RemoveAll(
-        [](const TWeakObjectPtr<UObject>& ExistingListener)
-        {
-            return ExistingListener.IsValid() == false;
-        });
-
-    for (const TWeakObjectPtr<UObject>& ExistingListener : WidgetListeners)
-    {
-        if (UNCUserWidget* UserWidget = Cast<UNCUserWidget>(ExistingListener.Get()))
-        {
-            UserWidget->RequestSourceRefresh();
-        }
-    }
-}
-

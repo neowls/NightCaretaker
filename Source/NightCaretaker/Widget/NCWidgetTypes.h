@@ -1,11 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "NCWidgetTypes.generated.h"
 
-/** Input ownership policy applied by the UI subsystem while a widget is visible. */
+/** Input ownership policy applied by NightCaretaker widgets when they need to influence controller input mode. */
 UENUM(BlueprintType)
 enum class ENCWidgetInputPolicy : uint8
 {
@@ -14,23 +14,26 @@ enum class ENCWidgetInputPolicy : uint8
     UIOnly UMETA(DisplayName = "UI Only")
 };
 
-/** Minimal context bundle injected into widgets by the UI subsystem. */
+/** Minimal HUD state cached by the local-player UI subsystem and pushed into the runtime HUD widget. */
 USTRUCT(BlueprintType)
-struct FNCWidgetContext
+struct FNCHUDState
 {
     GENERATED_BODY()
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
-    TObjectPtr<UObject> PrimarySource = nullptr;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+    bool bShowReticle = true;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
-    TObjectPtr<UObject> SecondarySource = nullptr;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+    bool bHasReticleFocus = false;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
-    TObjectPtr<UObject> WorldSource = nullptr;
-
-    bool IsEmpty() const
+    bool operator==(const FNCHUDState& Other) const
     {
-        return PrimarySource == nullptr && SecondarySource == nullptr && WorldSource == nullptr;
+        return bShowReticle == Other.bShowReticle
+            && bHasReticleFocus == Other.bHasReticleFocus;
+    }
+
+    bool operator!=(const FNCHUDState& Other) const
+    {
+        return !(*this == Other);
     }
 };

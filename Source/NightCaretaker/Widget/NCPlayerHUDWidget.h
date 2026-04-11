@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,9 +6,12 @@
 #include "NCUserWidget.h"
 #include "NCPlayerHUDWidget.generated.h"
 
-class UNCPlayerHUDWidgetSource;
+class UImage;
 
-/** Gameplay HUD base that exposes compact reticle, prompt, tool, and subtitle state to Blueprint. */
+/**
+ * Runtime gameplay HUD base.
+ * The widget mirrors simple HUD state from the local-player UI subsystem and optionally caches child widgets by name.
+ */
 UCLASS(Abstract, BlueprintType, Blueprintable)
 class NIGHTCARETAKER_API UNCPlayerHUDWidget : public UNCUserWidget
 {
@@ -17,33 +20,27 @@ class NIGHTCARETAKER_API UNCPlayerHUDWidget : public UNCUserWidget
 public:
     UNCPlayerHUDWidget(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-    UFUNCTION(BlueprintPure, Category = "HUD")
-    UNCPlayerHUDWidgetSource* GetHUDSource() const;
+    UFUNCTION(BlueprintCallable, Category = "HUD")
+    void ApplyHUDState(const FNCHUDState& InHUDState);
 
 protected:
-    virtual void RefreshView_Implementation() override;
+    virtual void NativeConstruct() override;
 
     UPROPERTY(Transient, BlueprintReadOnly, Category = "HUD")
     bool bShowReticle = true;
 
     UPROPERTY(Transient, BlueprintReadOnly, Category = "HUD")
-    float ReticleOpacity = 0.35f;
+    bool bHasReticleFocus = false;
 
-    UPROPERTY(Transient, BlueprintReadOnly, Category = "HUD")
-    bool bCanInteract = false;
+    UPROPERTY(meta = (BindWidgetOptional), BlueprintReadOnly, Category = "HUD")
+    TObjectPtr<UImage> ReticleImage;
 
-    UPROPERTY(Transient, BlueprintReadOnly, Category = "HUD")
-    FText InteractionPromptText;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD")
+    FLinearColor DefaultReticleTint = FLinearColor::White;
 
-    UPROPERTY(Transient, BlueprintReadOnly, Category = "HUD")
-    FText ToolLabelText;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD")
+    FLinearColor FocusReticleTint = FLinearColor(1.0f, 0.35f, 0.35f, 1.0f);
 
-    UPROPERTY(Transient, BlueprintReadOnly, Category = "HUD")
-    bool bShowSubtitle = false;
-
-    UPROPERTY(Transient, BlueprintReadOnly, Category = "HUD")
-    FText SubtitleSpeakerText;
-
-    UPROPERTY(Transient, BlueprintReadOnly, Category = "HUD")
-    FText SubtitleLineText;
+private:
+    void RefreshReticlePresentation();
 };

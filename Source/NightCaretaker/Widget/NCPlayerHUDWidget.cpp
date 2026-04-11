@@ -1,8 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "NCPlayerHUDWidget.h"
 
-#include "NCPlayerHUDWidgetSource.h"
+#include "Components/Image.h"
 
 UNCPlayerHUDWidget::UNCPlayerHUDWidget(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
@@ -10,24 +10,27 @@ UNCPlayerHUDWidget::UNCPlayerHUDWidget(const FObjectInitializer& ObjectInitializ
     InputPolicy = ENCWidgetInputPolicy::GameOnly;
 }
 
-UNCPlayerHUDWidgetSource* UNCPlayerHUDWidget::GetHUDSource() const
+void UNCPlayerHUDWidget::ApplyHUDState(const FNCHUDState& InHUDState)
 {
-    return GetPrimarySource<UNCPlayerHUDWidgetSource>();
+    bShowReticle = InHUDState.bShowReticle;
+    bHasReticleFocus = InHUDState.bHasReticleFocus;
+    RefreshReticlePresentation();
 }
 
-void UNCPlayerHUDWidget::RefreshView_Implementation()
+void UNCPlayerHUDWidget::NativeConstruct()
 {
-    if (const UNCPlayerHUDWidgetSource* HUDSource = GetHUDSource())
+    Super::NativeConstruct();
+
+    RefreshReticlePresentation();
+}
+
+void UNCPlayerHUDWidget::RefreshReticlePresentation()
+{
+    if (ReticleImage == nullptr)
     {
-        bShowReticle = HUDSource->bShowReticle;
-        ReticleOpacity = HUDSource->ReticleOpacity;
-        bCanInteract = HUDSource->bCanInteract;
-        InteractionPromptText = HUDSource->InteractionPromptText;
-        ToolLabelText = HUDSource->ToolLabelText;
-        bShowSubtitle = HUDSource->bShowSubtitle;
-        SubtitleSpeakerText = HUDSource->SubtitleSpeakerText;
-        SubtitleLineText = HUDSource->SubtitleLineText;
+        return;
     }
+
+    ReticleImage->SetVisibility(bShowReticle ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+    ReticleImage->SetColorAndOpacity(bHasReticleFocus ? FocusReticleTint : DefaultReticleTint);
 }
-
-

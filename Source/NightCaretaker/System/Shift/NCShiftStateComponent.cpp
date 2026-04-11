@@ -2,8 +2,6 @@
 
 #include "NCShiftStateComponent.h"
 
-#include "../../Widget/NCUserWidget.h"
-
 UNCShiftStateComponent::UNCShiftStateComponent()
 {
     PrimaryComponentTick.bCanEverTick = false;
@@ -22,7 +20,6 @@ void UNCShiftStateComponent::SetCurrentChapterId(const FName InChapterId)
     }
 
     CurrentChapterId = InChapterId;
-    NotifyWidgetListeners();
 }
 
 ENCShiftPhase UNCShiftStateComponent::GetShiftPhase() const
@@ -38,7 +35,6 @@ void UNCShiftStateComponent::SetShiftPhase(const ENCShiftPhase InShiftPhase)
     }
 
     ShiftPhase = InShiftPhase;
-    NotifyWidgetListeners();
 }
 
 FName UNCShiftStateComponent::GetFocusedComplaintId() const
@@ -54,7 +50,6 @@ void UNCShiftStateComponent::SetFocusedComplaintId(const FName InComplaintId)
     }
 
     FocusedComplaintId = InComplaintId;
-    NotifyWidgetListeners();
 }
 
 const FGameplayTagContainer& UNCShiftStateComponent::GetActiveProgressionTags() const
@@ -67,7 +62,6 @@ void UNCShiftStateComponent::AddProgressionTag(const FGameplayTag ProgressionTag
     if (ProgressionTag.IsValid() && ActiveProgressionTags.HasTag(ProgressionTag) == false)
     {
         ActiveProgressionTags.AddTag(ProgressionTag);
-        NotifyWidgetListeners();
     }
 }
 
@@ -76,7 +70,6 @@ void UNCShiftStateComponent::RemoveProgressionTag(const FGameplayTag Progression
     if (ProgressionTag.IsValid() && ActiveProgressionTags.HasTag(ProgressionTag))
     {
         ActiveProgressionTags.RemoveTag(ProgressionTag);
-        NotifyWidgetListeners();
     }
 }
 
@@ -84,53 +77,3 @@ bool UNCShiftStateComponent::HasProgressionTag(const FGameplayTag ProgressionTag
 {
     return ProgressionTag.IsValid() && ActiveProgressionTags.HasTag(ProgressionTag);
 }
-
-void UNCShiftStateComponent::RegisterWidgetListener_Implementation(UObject* Listener)
-{
-    if (Listener == nullptr)
-    {
-        return;
-    }
-
-    for (const TWeakObjectPtr<UObject>& ExistingListener : WidgetListeners)
-    {
-        if (ExistingListener.Get() == Listener)
-        {
-            return;
-        }
-    }
-
-    WidgetListeners.Add(Listener);
-}
-
-void UNCShiftStateComponent::UnregisterWidgetListener_Implementation(UObject* Listener)
-{
-    if (Listener == nullptr)
-    {
-        return;
-    }
-
-    WidgetListeners.RemoveAll(
-        [Listener](const TWeakObjectPtr<UObject>& ExistingListener)
-        {
-            return ExistingListener.IsValid() == false || ExistingListener.Get() == Listener;
-        });
-}
-
-void UNCShiftStateComponent::NotifyWidgetListeners()
-{
-    WidgetListeners.RemoveAll(
-        [](const TWeakObjectPtr<UObject>& ExistingListener)
-        {
-            return ExistingListener.IsValid() == false;
-        });
-
-    for (const TWeakObjectPtr<UObject>& ExistingListener : WidgetListeners)
-    {
-        if (UNCUserWidget* UserWidget = Cast<UNCUserWidget>(ExistingListener.Get()))
-        {
-            UserWidget->RequestSourceRefresh();
-        }
-    }
-}
-
